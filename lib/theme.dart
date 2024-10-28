@@ -16,10 +16,14 @@ class AppDimensions {
 ThemeData primaryTheme = ThemeData(
   colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
   textTheme: TextTheme(
-    bodyMedium: TextStyle(
-      color: AppColors.black,
-      fontSize: 16,
-      letterSpacing: 1,
-    ),
-  ),
+      bodySmall: TextStyle(
+          color: AppColors.black,
+          fontSize: 14,
+          letterSpacing: 1,
+          fontWeight: FontWeight.w600),
+      bodyLarge: TextStyle(
+          color: AppColors.black,
+          fontSize: 55,
+          letterSpacing: 1,
+          fontWeight: FontWeight.w700)),
 );
