@@ -11,6 +11,7 @@ class AppColors {
 
 class AppDimensions {
   static double buttonHeight = 80;
+  static double cardRadius = 28;
 }
 
 ThemeData primaryTheme = ThemeData(
