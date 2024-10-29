@@ -28,48 +28,39 @@ class _QuestionCardState extends State<QuestionCard> {
         children: [
           const SizedBox(height: 35),
           // Question number
-          StyledSmallText('Question $widget.questionNumber'),
+          StyledSmallText('Question ${widget.question.questionNumber}'),
           // Question text
-          StyledLargeText("question"),
+          StyledLargeText(widget.question.question),
           // Grid of options
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 27.97),
-            child: GridView.count(
-              crossAxisCount: 2,
+            padding:
+                const EdgeInsets.symmetric(horizontal: 27.97, vertical: 39),
+            child: GridView.builder(
+              itemCount: widget.question.options.length,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 10.23,
-              crossAxisSpacing: 10.23,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20)),
-                  alignment: Alignment.center,
-                  child: const StyledOptionsText("15"),
-                ),
-                Container(
-                  decoration: BoxDecoration(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 10.23,
+                crossAxisSpacing: 10.23,
+              ),
+              itemBuilder: (context, index) {
+                final option = widget.question.options[index];
+                return GestureDetector(
+                  onTap: () {
+                    // Handle option selection
+                    print('Selected option: ${option['id']}');
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
                       color: AppColors.white,
-                      borderRadius: BorderRadius.circular(20)),
-                  alignment: Alignment.center,
-                  child: const StyledOptionsText("9"),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: BorderRadius.circular(20)),
-                  alignment: Alignment.center,
-                  child: const StyledOptionsText("81"),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20)),
-                  alignment: Alignment.center,
-                  child: const StyledOptionsText("91"),
-                ),
-              ],
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    alignment: Alignment.center,
+                    child: StyledOptionsText(option['text'] ?? ''),
+                  ),
+                );
+              },
             ),
           ),
         ],
