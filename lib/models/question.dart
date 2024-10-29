@@ -129,6 +129,13 @@ final List<Question> questions = [
   ),
 ];
 
+/**
+ * QuestionCard(
+      questionNumber: '14',
+      question: '5+4',
+      options: const ['15', '9', '81', '91'],
+    )
+ */
 /*
 from typescript
 export interface Question{
