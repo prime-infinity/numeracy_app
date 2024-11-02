@@ -10,7 +10,9 @@ class Question extends StatefulWidget {
 }
 
 class _QuestionState extends State<Question> {
-  final _pageController = PageController();
+  final _pageController = PageController(
+    viewportFraction: 0.95,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -19,23 +21,23 @@ class _QuestionState extends State<Question> {
       appBar: AppBar(
         title: const Text("questions"),
       ),
-      body: PageView.builder(
-          controller: _pageController,
-          scrollDirection: Axis.horizontal,
-          itemCount: questions.length,
-          itemBuilder: (context, index) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: SizedBox(
-                  // Constrain the size of the card
-                  width: 382,
-                  height: 543,
-                  child: QuestionCard(questions[index]),
-                ),
-              ),
-            );
-          }),
+      body: Center(
+        child: SizedBox(
+          height: 543,
+          child: PageView.builder(
+            controller: _pageController,
+            scrollDirection: Axis.horizontal,
+            itemCount: questions.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 5.0), // Add spacing between cards
+                child: QuestionCard(questions[index]),
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 }
