@@ -4,9 +4,10 @@ import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
 
 class QuestionCard extends StatefulWidget {
-  const QuestionCard(this.question, {super.key});
+  const QuestionCard(this.question, {required this.visibility, super.key});
 
   final Question question;
+  final double visibility;
 
   @override
   State<QuestionCard> createState() => _QuestionCardState();
@@ -15,12 +16,19 @@ class QuestionCard extends StatefulWidget {
 class _QuestionCardState extends State<QuestionCard> {
   @override
   Widget build(BuildContext context) {
+    // Interpolate between the two colors based on visibility
+    Color cardColor = Color.lerp(
+      AppColors.primaryAccent,
+      AppColors.primaryColor,
+      widget.visibility,
+    )!;
+
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
         width: 382,
         constraints: const BoxConstraints(maxWidth: 382),
         decoration: BoxDecoration(
-          color: AppColors.primaryColor, // Purple background like in the image
+          color: cardColor, // Purple background like in the image
           borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
         ),
         child: Column(
