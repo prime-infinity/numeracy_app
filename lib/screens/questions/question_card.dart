@@ -36,9 +36,10 @@ class _QuestionCardState extends State<QuestionCard> {
           children: [
             const SizedBox(height: 36),
             // Question number
-            StyledSmallText('Question ${widget.question.questionNumber}'),
+            StyledSmallText(
+                'Question ${widget.question.questionNumber}', AppColors.white),
             // Question text
-            StyledLargeText(widget.question.question),
+            StyledLargeText(widget.question.question, AppColors.white),
             // Grid of options
             Container(
               padding:
@@ -65,7 +66,8 @@ class _QuestionCardState extends State<QuestionCard> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       alignment: Alignment.center,
-                      child: StyledOptionsText(option['text'] ?? ''),
+                      child: StyledOptionsText(
+                          option['text'] ?? '', AppColors.black),
                     ),
                   );
                 },

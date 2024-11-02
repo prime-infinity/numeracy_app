@@ -22,7 +22,7 @@ class Sandbox extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const StyledSmallText("normal text"),
+            StyledSmallText("normal text", AppColors.black),
             StyledButton(
                 text: "save",
                 onPressed: () {

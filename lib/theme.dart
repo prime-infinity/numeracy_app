@@ -22,9 +22,6 @@ ThemeData primaryTheme = ThemeData(
           fontSize: 14,
           letterSpacing: 1,
           fontWeight: FontWeight.w600),
-      bodyLarge: TextStyle(
-          color: AppColors.black,
-          fontSize: 55,
-          letterSpacing: 1,
-          fontWeight: FontWeight.w700)),
+      bodyLarge: const TextStyle(
+          fontSize: 55, letterSpacing: 1, fontWeight: FontWeight.w700)),
 );
