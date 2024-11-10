@@ -41,10 +41,12 @@ class _QuestionState extends State<Question> {
       appBar: AppBar(
         title: const Text("questions"),
       ),
-      body: Column(
-        children: [
-          Center(
-            child: SizedBox(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Spacer(flex: 2), // Top spacing
+            SizedBox(
               height: 543,
               child: PageView.builder(
                 controller: _pageController,
@@ -56,13 +58,10 @@ class _QuestionState extends State<Question> {
                   });
                 },
                 itemBuilder: (context, index) {
-                  // Calculate how "visible" this card is
                   double delta = index - _currentPage;
-                  // Value will be 1 when fully visible, 0 when completely off-screen
                   double visibility = 1 - delta.abs().clamp(0.0, 1.0);
                   return Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 5.0), // Add spacing between cards
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
                     child: QuestionCard(
                       questions[index],
                       visibility: visibility,
@@ -71,44 +70,44 @@ class _QuestionState extends State<Question> {
                 },
               ),
             ),
-          ),
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Indicators on the left
-                Row(
-                  children: List.generate(
-                    questions.length,
-                    (index) => Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: _index == index
-                              ? AppColors.primaryColor // Use your active color
-                              : Colors.grey.withOpacity(0.5), // Inactive color
+            const SizedBox(
+                height: 10), // Reduced space between cards and indicators
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: List.generate(
+                      questions.length,
+                      (index) => Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: _index == index
+                                ? AppColors.primaryColor
+                                : Colors.grey.withOpacity(0.5),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                // Time text on the right
-                const Text(
-                  'Time',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                  const Text(
+                    'Time',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+            const Spacer(flex: 3), // Bottom spacing
+          ],
+        ),
       ),
     );
   }
