@@ -58,7 +58,7 @@ class _QuestionCardState extends State<QuestionCard> {
                   return GestureDetector(
                     onTap: () {
                       // Handle option selection
-                      print('Selected option: ${option['id']}');
+                      print('Selected option: ${option.id}');
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -66,8 +66,7 @@ class _QuestionCardState extends State<QuestionCard> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       alignment: Alignment.center,
-                      child: StyledOptionsText(
-                          option['text'] ?? '', AppColors.black),
+                      child: StyledOptionsText(option.text, AppColors.black),
                     ),
                   );
                 },
