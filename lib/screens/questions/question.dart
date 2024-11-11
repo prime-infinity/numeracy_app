@@ -18,6 +18,9 @@ class _QuestionState extends State<Question> {
   double _currentPage = 0;
   int _index = 0;
 
+  // Map to track answers: questionNumber -> isCorrect
+  final Map<int, bool> _answeredQuestions = {};
+
   @override
   void initState() {
     super.initState();
@@ -32,6 +35,83 @@ class _QuestionState extends State<Question> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  // Get color for the indicator based on answer status
+  Color _getIndicatorColor(int index) {
+    if (!_answeredQuestions.containsKey(questions[index].questionNumber)) {
+      return _index == index
+          ? AppColors.primaryColor
+          : Colors.grey.withOpacity(0.5);
+    }
+
+    return _answeredQuestions[questions[index].questionNumber]!
+        ? AppColors.successColor // Green for correct
+        : AppColors.failureColor; // Red for incorrect
+  }
+
+  // Handle answer selection
+  void _handleAnswerSelected(bool isCorrect) {
+    // Store the answer
+    setState(() {
+      _answeredQuestions[questions[_index].questionNumber] = isCorrect;
+    });
+
+    // Wait a moment to show the answer feedback before scrolling
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      // Check if this isn't the last question
+      if (_index < questions.length - 1) {
+        _pageController.animateToPage(
+          _index + 1,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      } else {
+        // Handle completion of all questions
+        //_showCompletionDialog();
+      }
+    });
+  }
+
+  void _showCompletionDialog() {
+    // Calculate score
+    int correctAnswers =
+        _answeredQuestions.values.where((isCorrect) => isCorrect).length;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Quiz Complete!'),
+          content: Text(
+            'You got $correctAnswers out of ${questions.length} questions correct!',
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Try Again'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  _answeredQuestions.clear();
+                  _pageController.animateToPage(
+                    0,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                });
+              },
+            ),
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -52,6 +132,7 @@ class _QuestionState extends State<Question> {
                 controller: _pageController,
                 scrollDirection: Axis.horizontal,
                 itemCount: questions.length,
+                physics: const BouncingScrollPhysics(),
                 onPageChanged: (index) {
                   setState(() {
                     _index = index;
@@ -65,6 +146,7 @@ class _QuestionState extends State<Question> {
                     child: QuestionCard(
                       questions[index],
                       visibility: visibility,
+                      onAnswerSelected: _handleAnswerSelected,
                     ),
                   );
                 },
@@ -87,9 +169,7 @@ class _QuestionState extends State<Question> {
                           height: 8,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: _index == index
-                                ? AppColors.primaryColor
-                                : Colors.grey.withOpacity(0.5),
+                            color: _getIndicatorColor(index),
                           ),
                         ),
                       ),

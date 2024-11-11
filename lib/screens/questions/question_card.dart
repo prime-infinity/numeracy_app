@@ -4,10 +4,12 @@ import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
 
 class QuestionCard extends StatefulWidget {
-  const QuestionCard(this.question, {required this.visibility, super.key});
+  const QuestionCard(this.question,
+      {required this.visibility, required this.onAnswerSelected, super.key});
 
   final Question question;
   final double visibility;
+  final void Function(bool isCorrect) onAnswerSelected;
 
   @override
   State<QuestionCard> createState() => _QuestionCardState();
@@ -22,7 +24,7 @@ class _QuestionCardState extends State<QuestionCard> {
       selectedOptionId = optionId;
       isCorrect = widget.question.isCorrect(answerValue);
     });
-    //widget.onAnswerSelected(isCorrect!);
+    widget.onAnswerSelected(isCorrect!);
   }
 
   Color _getOptionColor(String optionId) {
