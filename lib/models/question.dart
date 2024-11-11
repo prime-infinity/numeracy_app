@@ -1,133 +1,164 @@
-import 'package:numeracy_app/models/option.dart';
+import 'package:numeracy_app/models/operation.dart';
 
 class Question {
   Question({
-    required String question,
-    required int questionNumber,
-    required List<Option> options,
-    required String correctAnswer,
-  })  : _question = question,
-        _questionNumber = questionNumber,
-        _options = options,
-        _correctAnswer = correctAnswer;
+    required this.operand1,
+    required this.operand2,
+    required this.operation,
+    required this.questionNumber,
+    required List<Map<String, int>> options,
+  })  : _options = options,
+        _result = operation.calculate(operand1, operand2) {
+    // Validate that one option matches the result
+    if (!options.any((option) => option.values.first == _result)) {
+      throw ArgumentError('One option must match the correct result: $_result');
+    }
+  }
 
-  final String _question;
-  final int _questionNumber;
-  late final List<Option> _options;
-  final String _correctAnswer;
+  final int operand1;
+  final int operand2;
+  final Operation operation;
+  final int questionNumber;
+  final List<Map<String, int>> _options;
+  final int _result;
 
   //getters
-  String get question => _question;
-  int get questionNumber => _questionNumber;
-  List<Option> get options =>
-      List.unmodifiable(_options); // Return immutable copy
-  String get correctAnswer => _correctAnswer;
+  List<Map<String, int>> get options => List.unmodifiable(_options);
+
+  // Get question as string for display
+  String get questionText => '$operand1 ${operation.symbol} $operand2';
+
+  // Check answer directly
+  //bool isCorrect(int answer) => answer == _result;
+
+  // Check answer by option ID
+  /*bool isCorrectOption(String optionId) {
+    final option = _options.firstWhere(
+      (opt) => opt.containsKey(optionId),
+      orElse: () => {},
+    );
+    return option.isNotEmpty && option[optionId] == _result;
+  }*/
 }
 
 final List<Question> questions = [
-  Question(question: "5 + 3", correctAnswer: "b", questionNumber: 1, options: [
-    Option(id: "a", text: "7"),
-    Option(id: "b", text: "8"),
-    Option(id: "c", text: "9"),
-    Option(id: "d", text: "10")
-  ]),
   Question(
-    question: "15 - 7",
+      operand1: 5,
+      operand2: 3,
+      operation: Operation.addition,
+      questionNumber: 1,
+      options: [
+        {"a": 7},
+        {"b": 8},
+        {"c": 9},
+        {"d": 10},
+      ]),
+  Question(
     questionNumber: 2,
-    correctAnswer: "c",
+    operation: Operation.subtraction,
+    operand1: 15,
+    operand2: 7,
     options: [
-      Option(id: "a", text: "6"),
-      Option(id: "b", text: "7"),
-      Option(id: "c", text: "8"),
-      Option(id: "d", text: "9")
+      {"a": 6},
+      {"b": 7},
+      {"c": 8},
+      {"d": 9},
     ],
   ),
   Question(
-    question: "4 × 6",
     questionNumber: 3,
-    correctAnswer: "d",
+    operation: Operation.multiplication,
+    operand1: 4,
+    operand2: 6,
     options: [
-      Option(id: "a", text: "18"),
-      Option(id: "b", text: "20"),
-      Option(id: "c", text: "22"),
-      Option(id: "d", text: "24")
+      {"a": 18},
+      {"b": 20},
+      {"c": 22},
+      {"d": 24},
     ],
   ),
   Question(
-    question: "20 ÷ 5",
+    operation: Operation.division,
+    operand1: 20,
+    operand2: 5,
     questionNumber: 4,
-    correctAnswer: "b",
     options: [
-      Option(id: "a", text: "3"),
-      Option(id: "b", text: "4"),
-      Option(id: "c", text: "5"),
-      Option(id: "d", text: "6")
+      {"a": 3},
+      {"b": 4},
+      {"c": 5},
+      {"d": 6},
     ],
   ),
   Question(
-    question: "9 + 7",
+    operation: Operation.addition,
+    operand1: 9,
+    operand2: 7,
     questionNumber: 5,
-    correctAnswer: "c",
     options: [
-      Option(id: "a", text: "14"),
-      Option(id: "b", text: "15"),
-      Option(id: "c", text: "16"),
-      Option(id: "d", text: "17")
+      {"a": 14},
+      {"b": 15},
+      {"c": 16},
+      {"d": 17},
     ],
   ),
   Question(
-    question: "25 - 8",
+    operation: Operation.subtraction,
+    operand1: 25,
+    operand2: 8,
     questionNumber: 6,
-    correctAnswer: "a",
     options: [
-      Option(id: "a", text: "17"),
-      Option(id: "b", text: "16"),
-      Option(id: "c", text: "15"),
-      Option(id: "d", text: "18")
+      {"a": 17},
+      {"b": 16},
+      {"c": 15},
+      {"d": 18},
     ],
   ),
   Question(
-    question: "3 × 8",
+    operation: Operation.multiplication,
+    operand1: 3,
+    operand2: 8,
     questionNumber: 7,
-    correctAnswer: "d",
     options: [
-      Option(id: "a", text: "21"),
-      Option(id: "b", text: "22"),
-      Option(id: "c", text: "23"),
-      Option(id: "d", text: "24")
+      {"a": 21},
+      {"b": 22},
+      {"c": 23},
+      {"d": 24},
     ],
   ),
   Question(
-    question: "36 ÷ 6",
+    operation: Operation.division,
+    operand1: 36,
+    operand2: 6,
     questionNumber: 8,
-    correctAnswer: "b",
     options: [
-      Option(id: "a", text: "5"),
-      Option(id: "b", text: "6"),
-      Option(id: "c", text: "7"),
-      Option(id: "d", text: "8")
+      {"a": 5},
+      {"b": 6},
+      {"c": 7},
+      {"d": 8},
     ],
   ),
   Question(
-    question: "12 + 13",
+    operation: Operation.addition,
+    operand1: 12,
+    operand2: 13,
     questionNumber: 9,
-    correctAnswer: "c",
     options: [
-      Option(id: "a", text: "23"),
-      Option(id: "b", text: "24"),
-      Option(id: "c", text: "25"),
-      Option(id: "d", text: "26")
+      {"a": 23},
+      {"b": 24},
+      {"c": 25},
+      {"d": 26},
     ],
   ),
   Question(
-    question: "30 - 14",
+    operation: Operation.subtraction,
+    operand1: 30,
+    operand2: 14,
     questionNumber: 10,
-    correctAnswer: "d",
     options: [
-      Option(id: "a", text: "14"),
-      Option(id: "b", text: "15"),
-      Option(id: "c", text: "15"),
-      Option(id: "d", text: "16")
+      {"a": 14},
+      {"b": 15},
+      {"c": 13},
+      {"d": 16},
     ],
   ),
 ];
