@@ -14,6 +14,29 @@ class QuestionCard extends StatefulWidget {
 }
 
 class _QuestionCardState extends State<QuestionCard> {
+  String? selectedOptionId;
+  bool? isCorrect;
+
+  void _handleOptionSelection(String optionId, int answerValue) {
+    setState(() {
+      selectedOptionId = optionId;
+      isCorrect = widget.question.isCorrect(answerValue);
+    });
+    //widget.onAnswerSelected(isCorrect!);
+  }
+
+  Color _getOptionColor(String optionId) {
+    if (selectedOptionId == null) return AppColors.white;
+
+    if (selectedOptionId == optionId) {
+      return isCorrect!
+          ? AppColors.successColor // You'll need to add this to your theme
+          : AppColors.failureColor; // You'll need to add this to your theme
+    }
+
+    return AppColors.white;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Interpolate between the two colors based on visibility
@@ -38,8 +61,8 @@ class _QuestionCardState extends State<QuestionCard> {
             // Question number
             StyledSmallText(
                 'Question ${widget.question.questionNumber}', AppColors.white),
-            // Question text
-            StyledLargeText(widget.question.question, AppColors.white),
+            // // Question text using the formatted question string
+            StyledLargeText(widget.question.questionText, AppColors.white),
             // Grid of options
             Container(
               padding:
@@ -55,18 +78,36 @@ class _QuestionCardState extends State<QuestionCard> {
                 ),
                 itemBuilder: (context, index) {
                   final option = widget.question.options[index];
-                  return GestureDetector(
-                    onTap: () {
-                      // Handle option selection
-                      print('Selected option: ${option.id}');
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(20),
+                  final optionId = option.keys.first;
+                  final optionValue = option.values.first;
+
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    child: GestureDetector(
+                      onTap: selectedOptionId == null
+                          ? () => _handleOptionSelection(optionId, optionValue)
+                          : null,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: _getOptionColor(optionId),
+                          borderRadius: BorderRadius.circular(20),
+                          border: selectedOptionId == optionId
+                              ? Border.all(
+                                  color: isCorrect!
+                                      ? AppColors.successBorder // Add to theme
+                                      : AppColors.failureBorder, // Add to theme
+                                  width: 2,
+                                )
+                              : null,
+                        ),
+                        alignment: Alignment.center,
+                        child: StyledOptionsText(
+                          optionValue.toString(),
+                          selectedOptionId == optionId
+                              ? AppColors.white
+                              : AppColors.black,
+                        ),
                       ),
-                      alignment: Alignment.center,
-                      child: StyledOptionsText(option.text, AppColors.black),
                     ),
                   );
                 },

@@ -29,7 +29,7 @@ class Question {
   String get questionText => '$operand1 ${operation.symbol} $operand2';
 
   // Check answer directly
-  //bool isCorrect(int answer) => answer == _result;
+  bool isCorrect(int answer) => answer == _result;
 
   // Check answer by option ID
   /*bool isCorrectOption(String optionId) {
