@@ -4,7 +4,7 @@ class AppColors {
   static Color primaryColor = const Color.fromARGB(255, 160, 104, 253);
   static Color primaryAccent = const Color.fromARGB(255, 223, 209, 246);
   static Color successColor = const Color.fromARGB(255, 19, 250, 168);
-  static Color failureColor = const Color.fromARGB(255, 255, 60, 122);
+  static Color failureColor = const Color.fromARGB(255, 255, 126, 128);
   static Color successBorder = const Color(0xFF388E3C);
   static Color failureBorder = const Color(0xFFD32F2F);
   static Color black = const Color.fromARGB(255, 19, 18, 18);
