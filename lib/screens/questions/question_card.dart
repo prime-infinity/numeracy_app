@@ -40,7 +40,7 @@ class _QuestionCardState extends State<QuestionCard> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    final verticalPadding = screenSize.height * 0.09; // 9% of screen height
+    final verticalPadding = screenSize.height * 0.07; // 9% of screen height
 
     Color cardColor = Color.lerp(
       AppColors.primaryAccent,
