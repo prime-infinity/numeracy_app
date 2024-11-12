@@ -39,6 +39,9 @@ class _QuestionCardState extends State<QuestionCard> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final verticalPadding = screenSize.height * 0.09; // 9% of screen height
+
     Color cardColor = Color.lerp(
       AppColors.primaryAccent,
       AppColors.primaryColor,
@@ -56,7 +59,7 @@ class _QuestionCardState extends State<QuestionCard> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const SizedBox(height: 70),
+          SizedBox(height: verticalPadding),
 
           // Question text
 
