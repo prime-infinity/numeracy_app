@@ -61,7 +61,7 @@ class _QuestionState extends ConsumerState<Question> {
     });
 
     // Wait a moment to show the answer feedback before scrolling
-    Future.delayed(const Duration(milliseconds: 300), () {
+    Future.delayed(const Duration(milliseconds: 150), () {
       // Check if this isn't the last question
       if (_index < questions.length - 1) {
         _pageController.animateToPage(
