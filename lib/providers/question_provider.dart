@@ -16,3 +16,6 @@ class QuestionNotifier extends _$QuestionNotifier {
     state = questions;
   }
 }
+
+//TODO:
+//add time field to this state
