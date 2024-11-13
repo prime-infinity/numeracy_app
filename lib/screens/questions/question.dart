@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:numeracy_app/models/question.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:numeracy_app/providers/question_provider.dart';
 import 'package:numeracy_app/screens/questions/question_card.dart';
 import 'package:numeracy_app/theme.dart';
 
-class Question extends StatefulWidget {
+class Question extends ConsumerStatefulWidget {
   const Question({super.key});
 
   @override
-  State<Question> createState() => _QuestionState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _QuestionState();
 }
 
-class _QuestionState extends State<Question> {
+class _QuestionState extends ConsumerState<Question> {
   final _pageController = PageController(
     viewportFraction: 0.95,
   );
@@ -39,6 +40,7 @@ class _QuestionState extends State<Question> {
 
   // Get color for the indicator based on answer status
   Color _getIndicatorColor(int index) {
+    final questions = ref.watch(questionNotifierProvider);
     if (!_answeredQuestions.containsKey(questions[index].questionNumber)) {
       return _index == index
           ? AppColors.primaryColor
@@ -52,6 +54,7 @@ class _QuestionState extends State<Question> {
 
   // Handle answer selection
   void _handleAnswerSelected(bool isCorrect) {
+    final questions = ref.watch(questionNotifierProvider);
     // Store the answer
     setState(() {
       _answeredQuestions[questions[_index].questionNumber] = isCorrect;
@@ -74,6 +77,7 @@ class _QuestionState extends State<Question> {
   }
 
   void _showCompletionDialog() {
+    final questions = ref.read(questionNotifierProvider);
     // Calculate score
     int correctAnswers =
         _answeredQuestions.values.where((isCorrect) => isCorrect).length;
@@ -116,6 +120,8 @@ class _QuestionState extends State<Question> {
 
   @override
   Widget build(BuildContext context) {
+    // Watch the questions from the provider
+    final questions = ref.watch(questionNotifierProvider);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
