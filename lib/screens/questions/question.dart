@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:numeracy_app/providers/question_provider.dart';
@@ -22,6 +24,10 @@ class _QuestionState extends ConsumerState<Question> {
   // Map to track answers: questionNumber -> isCorrect
   final Map<int, bool> _answeredQuestions = {};
 
+  // Timer variables
+  int _timeLeft = 0;
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
@@ -30,12 +36,50 @@ class _QuestionState extends ConsumerState<Question> {
         _currentPage = _pageController.page ?? 0;
       });
     });
+    _startTimer();
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
     _pageController.dispose();
     super.dispose();
+  }
+
+  void _startTimer() {
+    final state = ref.read(questionNotifierProvider);
+    _timeLeft = state['timelimit'];
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _timeLeft--;
+      });
+
+      if (_timeLeft == 0) {
+        _timer?.cancel();
+        _handleTimeUp();
+      }
+    });
+  }
+
+  void _handleTimeUp() {
+    // Handle the case where the time limit has been reached
+    // You can add your logic here, such as submitting the current answers,
+    // showing a dialog, or moving to the next question
+    print('Time is up!');
+  }
+
+  //color of time text
+  Color _getTimeRemainingColor(int timeLeft, int totalTime) {
+    double timePercentage = (timeLeft / totalTime) * 100;
+
+    if (timePercentage > 50) {
+      return AppColors.successColor;
+    } else if (timePercentage > 20) {
+      return Colors.yellow;
+    } else {
+      return AppColors.failureColor;
+    }
   }
 
   // Get color for the indicator based on answer status
@@ -125,7 +169,6 @@ class _QuestionState extends ConsumerState<Question> {
     //print(questions['questions']);
     final state = ref.watch(questionNotifierProvider);
     final questions = state['questions'];
-    final timeLimit = state['timelimit'];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -186,12 +229,23 @@ class _QuestionState extends ConsumerState<Question> {
                       ),
                     ),
                   ),
-                  Text(
-                    '$timeLimit',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                    ),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.access_time,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '$_timeLeft',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: _getTimeRemainingColor(
+                              _timeLeft, state['timelimit']),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
