@@ -9,7 +9,7 @@ void main() {
   runApp(ProviderScope(
     child: MaterialApp(
       theme: primaryTheme,
-      home: Question(),
+      home: const Question(),
     ),
   ));
 }
@@ -29,7 +29,7 @@ class Sandbox extends StatelessWidget {
             StyledButton(
                 text: "save",
                 onPressed: () {
-                  print('Save button pressed');
+                  //print('Save button pressed');
                 }),
             // With custom width and colors:
             StyledButton(
@@ -38,7 +38,7 @@ class Sandbox extends StatelessWidget {
               backgroundColor: Colors.red,
               textColor: Colors.white,
               onPressed: () {
-                print('Delete button pressed');
+                //print('Delete button pressed');
               },
             ),
             // With loading state:
@@ -46,14 +46,14 @@ class Sandbox extends StatelessWidget {
               text: "Loading Example",
               isLoading: true, // Shows loading spinner instead of text
               onPressed: () {
-                print('Button pressed');
+                //print('Button pressed');
               },
             ),
             StyledButton(
                 text: "Primary button",
                 backgroundColor: AppColors.primaryColor,
                 onPressed: () {
-                  print("primary button clicked");
+                  //print("primary button clicked");
                 }),
           ],
         ),

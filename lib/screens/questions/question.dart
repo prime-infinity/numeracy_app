@@ -76,7 +76,7 @@ class _QuestionState extends ConsumerState<Question> {
     });
   }
 
-  void _showCompletionDialog() {
+  /*void _showCompletionDialog() {
     final questions = ref.read(questionNotifierProvider);
     // Calculate score
     int correctAnswers =
@@ -116,7 +116,7 @@ class _QuestionState extends ConsumerState<Question> {
         );
       },
     );
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
