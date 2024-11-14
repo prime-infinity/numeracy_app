@@ -40,7 +40,7 @@ class _QuestionState extends ConsumerState<Question> {
 
   // Get color for the indicator based on answer status
   Color _getIndicatorColor(int index) {
-    final questions = ref.watch(questionNotifierProvider);
+    final questions = ref.watch(questionNotifierProvider)['questions'];
     if (!_answeredQuestions.containsKey(questions[index].questionNumber)) {
       return _index == index
           ? AppColors.primaryColor
@@ -54,7 +54,7 @@ class _QuestionState extends ConsumerState<Question> {
 
   // Handle answer selection
   void _handleAnswerSelected(bool isCorrect) {
-    final questions = ref.watch(questionNotifierProvider);
+    final questions = ref.watch(questionNotifierProvider)['questions'];
     // Store the answer
     setState(() {
       _answeredQuestions[questions[_index].questionNumber] = isCorrect;
@@ -121,7 +121,12 @@ class _QuestionState extends ConsumerState<Question> {
   @override
   Widget build(BuildContext context) {
     // Watch the questions from the provider
-    final questions = ref.watch(questionNotifierProvider);
+    //final questions = ref.watch(questionNotifierProvider);
+    //print(questions['questions']);
+    final state = ref.watch(questionNotifierProvider);
+    final questions = state['questions'];
+    final timeLimit = state['timelimit'];
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -181,11 +186,11 @@ class _QuestionState extends ConsumerState<Question> {
                       ),
                     ),
                   ),
-                  const Text(
-                    'Time',
-                    style: TextStyle(
+                  Text(
+                    '$timeLimit',
+                    style: const TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                 ],

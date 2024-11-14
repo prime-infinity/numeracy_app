@@ -30,15 +30,6 @@ class Question {
 
   // Check answer directly
   bool isCorrect(int answer) => answer == _result;
-
-  // Check answer by option ID
-  /*bool isCorrectOption(String optionId) {
-    final option = _options.firstWhere(
-      (opt) => opt.containsKey(optionId),
-      orElse: () => {},
-    );
-    return option.isNotEmpty && option[optionId] == _result;
-  }*/
 }
 
 /*
@@ -65,3 +56,12 @@ export interface Question{
         };
     }
 }*/
+
+// Check answer by option ID
+  /*bool isCorrectOption(String optionId) {
+    final option = _options.firstWhere(
+      (opt) => opt.containsKey(optionId),
+      orElse: () => {},
+    );
+    return option.isNotEmpty && option[optionId] == _result;
+  }*/

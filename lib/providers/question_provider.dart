@@ -7,15 +7,18 @@ part 'question_provider.g.dart';
 @riverpod
 class QuestionNotifier extends _$QuestionNotifier {
   @override
-  List<Question> build() {
-    return generateRandomQuestions();
+  Map<String, dynamic> build() {
+    return {
+      'timelimit': 10,
+      'questions': generateRandomQuestions(),
+    };
   }
 
   //replaces current questions with new ones
   void replaceQuestions(List<Question> questions) {
-    state = questions;
+    state = {
+      'timelimit': 10,
+      'questions': questions,
+    };
   }
 }
-
-//TODO:
-//add time field to this state
