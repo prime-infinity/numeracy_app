@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:numeracy_app/providers/question_provider.dart';
 import 'package:numeracy_app/screens/questions/question_card.dart';
+import 'package:numeracy_app/shared/modals/completion_modal.dart';
 import 'package:numeracy_app/theme.dart';
 
 class Question extends ConsumerStatefulWidget {
@@ -69,19 +70,6 @@ class _QuestionState extends ConsumerState<Question> {
     print('Time is up!');
   }
 
-  //color of time text
-  Color _getTimeRemainingColor(int timeLeft, int totalTime) {
-    double timePercentage = (timeLeft / totalTime) * 100;
-
-    if (timePercentage > 50) {
-      return AppColors.successColor;
-    } else if (timePercentage > 20) {
-      return Colors.yellow;
-    } else {
-      return AppColors.failureColor;
-    }
-  }
-
   // Get color for the indicator based on answer status
   Color _getIndicatorColor(int index) {
     final questions = ref.watch(questionNotifierProvider)['questions'];
@@ -115,52 +103,42 @@ class _QuestionState extends ConsumerState<Question> {
         );
       } else {
         // Handle completion of all questions
-        //_showCompletionDialog();
+        _showCompletionDialog();
       }
     });
   }
 
-  /*void _showCompletionDialog() {
-    final questions = ref.read(questionNotifierProvider);
+  void _showCompletionDialog() {
+    final questions = ref.read(questionNotifierProvider)['questions'];
     // Calculate score
     int correctAnswers =
         _answeredQuestions.values.where((isCorrect) => isCorrect).length;
 
     showDialog(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: true,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Quiz Complete!'),
-          content: Text(
-            'You got $correctAnswers out of ${questions.length} questions correct!',
-          ),
-          actions: [
-            TextButton(
-              child: const Text('Try Again'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                setState(() {
-                  _answeredQuestions.clear();
-                  _pageController.animateToPage(
-                    0,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                  );
-                });
-              },
-            ),
-            TextButton(
-              child: const Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+        return CompletionModal(
+          correctAnswers: correctAnswers,
+          totalQuestions: questions.length,
+          onTryAgain: () {
+            Navigator.of(context).pop();
+            setState(() {
+              _answeredQuestions.clear();
+              _pageController.animateToPage(
+                0,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            });
+          },
+          onClose: () {
+            Navigator.of(context).pop();
+          },
         );
       },
     );
-  }*/
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -238,11 +216,9 @@ class _QuestionState extends ConsumerState<Question> {
                       const SizedBox(width: 4),
                       Text(
                         '$_timeLeft',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
-                          color: _getTimeRemainingColor(
-                              _timeLeft, state['timelimit']),
                         ),
                       ),
                     ],
