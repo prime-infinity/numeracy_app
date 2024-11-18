@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:numeracy_app/providers/question_provider.dart';
 import 'package:numeracy_app/screens/questions/question_card.dart';
+import 'package:numeracy_app/services/question_generator.dart';
 import 'package:numeracy_app/shared/modals/completion_modal.dart';
 import 'package:numeracy_app/theme.dart';
 
@@ -21,6 +22,7 @@ class _QuestionState extends ConsumerState<Question> {
 
   double _currentPage = 0;
   int _index = 0;
+  bool _hasStarted = false; // New flag to track if timer should start
 
   // Map to track answers: questionNumber -> isCorrect
   final Map<int, bool> _answeredQuestions = {};
@@ -37,7 +39,38 @@ class _QuestionState extends ConsumerState<Question> {
         _currentPage = _pageController.page ?? 0;
       });
     });
-    _startTimer();
+    // Initialize timeLeft but don't start timer yet
+    _initializeTimer();
+  }
+
+  void _initializeTimer() {
+    final state = ref.read(questionNotifierProvider);
+    _timeLeft = state['timelimit'];
+  }
+
+  void _resetQuiz() {
+    // Cancel existing timer
+    _timer?.cancel();
+
+    // Generate new questions using the provider
+    ref
+        .read(questionNotifierProvider.notifier)
+        .replaceQuestions(generateRandomQuestions());
+    // Reset all state variables
+    setState(() {
+      _hasStarted = false;
+      _answeredQuestions.clear();
+      _currentPage = 0;
+      _index = 0;
+      _initializeTimer();
+    });
+
+    // Animate back to first question
+    _pageController.animateToPage(
+      0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -48,8 +81,9 @@ class _QuestionState extends ConsumerState<Question> {
   }
 
   void _startTimer() {
-    final state = ref.read(questionNotifierProvider);
-    _timeLeft = state['timelimit'];
+    if (_timer != null || _hasStarted) return; // Don't start if already running
+
+    _hasStarted = true;
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -67,6 +101,8 @@ class _QuestionState extends ConsumerState<Question> {
     // Handle the case where the time limit has been reached
     // You can add your logic here, such as submitting the current answers,
     // showing a dialog, or moving to the next question
+    _timer?.cancel();
+    _showCompletionDialog();
     print('Time is up!');
   }
 
@@ -87,6 +123,12 @@ class _QuestionState extends ConsumerState<Question> {
   // Handle answer selection
   void _handleAnswerSelected(bool isCorrect) {
     final questions = ref.watch(questionNotifierProvider)['questions'];
+
+    // Start timer on first attempt if not already started
+    if (!_hasStarted) {
+      _startTimer();
+    }
+
     // Store the answer
     setState(() {
       _answeredQuestions[questions[_index].questionNumber] = isCorrect;
@@ -123,14 +165,7 @@ class _QuestionState extends ConsumerState<Question> {
           totalQuestions: questions.length,
           onTryAgain: () {
             Navigator.of(context).pop();
-            setState(() {
-              _answeredQuestions.clear();
-              _pageController.animateToPage(
-                0,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-              );
-            });
+            _resetQuiz();
           },
           onClose: () {
             Navigator.of(context).pop();
