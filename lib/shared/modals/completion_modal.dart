@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:numeracy_app/shared/buttons/styled_button.dart';
+import 'package:numeracy_app/theme.dart';
 
 class CompletionModal extends StatelessWidget {
   const CompletionModal({
@@ -22,16 +23,16 @@ class CompletionModal extends StatelessWidget {
 
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
       ),
       elevation: 0.0,
       backgroundColor: Colors.transparent,
       child: Container(
-        height: screenHeight * 0.8,
+        height: screenHeight * 0.7,
         width: screenWidth * 0.9,
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.primaryAccent,
           borderRadius: BorderRadius.circular(16.0),
         ),
         child: Column(
@@ -53,7 +54,6 @@ class CompletionModal extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            const Spacer(),
             StyledButton(
               onPressed: onTryAgain,
               text: 'Start Again',
