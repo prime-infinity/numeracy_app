@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-//import 'package:numeracy_app/theme.dart';
 
 class StyledSmallText extends StatelessWidget {
   const StyledSmallText(this.text, this.color, {super.key});
