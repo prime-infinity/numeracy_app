@@ -41,15 +41,16 @@ class CompletionModal extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              StyledLargeText("5/10", AppColors.black),
-              const SizedBox(height: 16.0),
+              StyledLargeText(
+                  "$correctAnswers/$totalQuestions", AppColors.black),
+              const SizedBox(height: 36.0),
               StyledButton(
                 onPressed: onClose,
                 text: 'End',
                 backgroundColor: AppColors.white,
                 textColor: AppColors.black,
               ),
-              const SizedBox(height: 16.0),
+              const SizedBox(height: 25.0),
               StyledButton(
                 onPressed: onTryAgain,
                 text: 'Start Again',
