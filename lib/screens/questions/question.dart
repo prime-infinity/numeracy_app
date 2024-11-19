@@ -186,6 +186,7 @@ class _QuestionState extends ConsumerState<Question> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("questions"),
+        centerTitle: true,
       ),
       body: Center(
         child: Column(

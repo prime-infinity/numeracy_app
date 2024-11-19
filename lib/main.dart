@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:numeracy_app/screens/questions/question.dart';
+import 'package:numeracy_app/screens/categories/category.dart';
+//import 'package:numeracy_app/screens/questions/question.dart';
 import 'package:numeracy_app/shared/buttons/styled_button.dart';
 import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
@@ -9,7 +10,7 @@ void main() {
   runApp(ProviderScope(
     child: MaterialApp(
       theme: primaryTheme,
-      home: const Question(),
+      home: const Category(),
     ),
   ));
 }
