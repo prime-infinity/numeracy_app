@@ -19,12 +19,10 @@ class AppDimensions {
 
 ThemeData primaryTheme = ThemeData(
   colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
-  textTheme: TextTheme(
+  textTheme: const TextTheme(
       bodySmall: TextStyle(
-          color: AppColors.black,
-          fontSize: 14,
-          letterSpacing: 1,
-          fontWeight: FontWeight.w600),
-      bodyLarge: const TextStyle(
-          fontSize: 60, letterSpacing: 1, fontWeight: FontWeight.w700)),
+          fontSize: 14, letterSpacing: 1, fontWeight: FontWeight.w400),
+      bodyLarge: TextStyle(
+          fontSize: 60, letterSpacing: 1, fontWeight: FontWeight.w700),
+      titleSmall: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
 );

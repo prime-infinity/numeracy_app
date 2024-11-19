@@ -11,7 +11,7 @@ class StyledSmallText extends StatelessWidget {
     return Text(
       text,
       style: GoogleFonts.poppins(
-          textStyle: Theme.of(context).textTheme.bodyMedium, color: color),
+          textStyle: Theme.of(context).textTheme.bodySmall, color: color),
     );
   }
 }
@@ -27,6 +27,21 @@ class StyledLargeText extends StatelessWidget {
       text,
       style: GoogleFonts.poppins(
           textStyle: Theme.of(context).textTheme.bodyLarge, color: color),
+    );
+  }
+}
+
+class StyledTitleSmallText extends StatelessWidget {
+  const StyledTitleSmallText(this.text, this.color, {super.key});
+  final String text;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: GoogleFonts.poppins(
+          textStyle: Theme.of(context).textTheme.titleSmall, color: color),
     );
   }
 }
