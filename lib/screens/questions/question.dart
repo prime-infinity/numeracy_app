@@ -103,7 +103,6 @@ class _QuestionState extends ConsumerState<Question> {
     // showing a dialog, or moving to the next question
     _timer?.cancel();
     _showCompletionDialog();
-    print('Time is up!');
   }
 
   // Get color for the indicator based on answer status
