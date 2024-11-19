@@ -51,6 +51,7 @@ class _QuestionState extends ConsumerState<Question> {
   void _resetQuiz() {
     // Cancel existing timer
     _timer?.cancel();
+    _timer = null; // Add this line to reset the timer instance
 
     // Generate new questions using the provider
     ref
@@ -91,7 +92,6 @@ class _QuestionState extends ConsumerState<Question> {
       });
 
       if (_timeLeft == 0) {
-        _timer?.cancel();
         _handleTimeUp();
       }
     });
@@ -158,7 +158,7 @@ class _QuestionState extends ConsumerState<Question> {
 
     showDialog(
       context: context,
-      barrierDismissible: true,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return CompletionModal(
           correctAnswers: correctAnswers,
