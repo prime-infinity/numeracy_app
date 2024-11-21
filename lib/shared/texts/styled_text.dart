@@ -16,6 +16,21 @@ class StyledSmallText extends StatelessWidget {
   }
 }
 
+class StyledMediumText extends StatelessWidget {
+  const StyledMediumText(this.text, this.color, {super.key});
+  final String text;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: GoogleFonts.poppins(
+          textStyle: Theme.of(context).textTheme.bodyMedium, color: color),
+    );
+  }
+}
+
 class StyledLargeText extends StatelessWidget {
   const StyledLargeText(this.text, this.color, {super.key});
   final String text;
@@ -42,6 +57,21 @@ class StyledTitleSmallText extends StatelessWidget {
       text,
       style: GoogleFonts.poppins(
           textStyle: Theme.of(context).textTheme.titleSmall, color: color),
+    );
+  }
+}
+
+class StyledTitleMediumText extends StatelessWidget {
+  const StyledTitleMediumText(this.text, this.color, {super.key});
+  final String text;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: GoogleFonts.poppins(
+          textStyle: Theme.of(context).textTheme.titleMedium, color: color),
     );
   }
 }

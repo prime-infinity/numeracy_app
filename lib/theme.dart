@@ -22,7 +22,9 @@ ThemeData primaryTheme = ThemeData(
   textTheme: const TextTheme(
       bodySmall: TextStyle(
           fontSize: 14, letterSpacing: 1, fontWeight: FontWeight.w400),
+      bodyMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
       bodyLarge: TextStyle(
           fontSize: 60, letterSpacing: 1, fontWeight: FontWeight.w700),
-      titleSmall: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+      titleSmall: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+      titleMedium: TextStyle(fontSize: 35, fontWeight: FontWeight.w600)),
 );
