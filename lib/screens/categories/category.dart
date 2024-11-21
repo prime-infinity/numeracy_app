@@ -65,7 +65,7 @@ class Category extends StatelessWidget {
               Container(
                 height: 124.37,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 245, 249, 250),
+                  color: AppColors.cardGrey,
                   borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
                 ),
                 child: Padding(
@@ -106,7 +106,7 @@ class Category extends StatelessWidget {
               Container(
                 height: 124.37,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 245, 249, 250),
+                  color: AppColors.cardGrey,
                   borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
                 ),
                 child: Padding(
@@ -147,7 +147,7 @@ class Category extends StatelessWidget {
               Container(
                 height: 124.37,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 245, 249, 250),
+                  color: AppColors.cardGrey,
                   borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
                 ),
                 child: Padding(
@@ -188,7 +188,7 @@ class Category extends StatelessWidget {
               Container(
                 height: 124.37,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 245, 249, 250),
+                  color: AppColors.cardGrey,
                   borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
                 ),
                 child: Padding(

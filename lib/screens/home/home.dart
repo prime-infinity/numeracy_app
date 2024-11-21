@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:numeracy_app/screens/categories/category.dart';
+import 'package:numeracy_app/screens/profile/profile.dart';
 import 'package:numeracy_app/screens/questions/question.dart';
 import 'package:numeracy_app/theme.dart';
 
@@ -32,7 +33,7 @@ class _HomeState extends State<Home> {
                   _currentPage = index;
                 });
               },
-              children: const [Category(), Question()],
+              children: const [Category(), Question(), Profile()],
             ),
           ),
           Padding(
@@ -42,7 +43,7 @@ class _HomeState extends State<Home> {
               children: [
                 Row(
                   children: List.generate(
-                    2,
+                    3,
                     (index) => Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: Container(
