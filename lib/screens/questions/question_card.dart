@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:numeracy_app/models/question.dart';
+import 'package:numeracy_app/providers/question_provider.dart';
 import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
 
-class QuestionCard extends StatefulWidget {
+class QuestionCard extends ConsumerStatefulWidget {
   const QuestionCard(this.question,
       {required this.visibility, required this.onAnswerSelected, super.key});
 
@@ -12,18 +14,30 @@ class QuestionCard extends StatefulWidget {
   final void Function(bool isCorrect) onAnswerSelected;
 
   @override
-  State<QuestionCard> createState() => _QuestionCardState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _QuestionCardState();
 }
 
-class _QuestionCardState extends State<QuestionCard> {
+class _QuestionCardState extends ConsumerState<QuestionCard> {
   String? selectedOptionId;
   bool? isCorrect;
 
   void _handleOptionSelection(String optionId, int answerValue) {
+    // Check if the question has already been answered
+    final questionNumber = widget.question.questionNumber;
+    final questionNotifier = ref.read(questionNotifierProvider.notifier);
+
+    if (questionNotifier.isQuestionAnswered(questionNumber)) {
+      return;
+    }
+
     setState(() {
       selectedOptionId = optionId;
       isCorrect = widget.question.isCorrect(answerValue);
     });
+
+    //record the answer in the provider
+    questionNotifier.recordAnswer(questionNumber, isCorrect!);
+
     widget.onAnswerSelected(isCorrect!);
   }
 

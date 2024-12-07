@@ -11,6 +11,22 @@ class QuestionNotifier extends _$QuestionNotifier {
     return {
       'timelimit': 10,
       'questions': generateRandomQuestions(),
+      'answeredQuestions': <int, bool>{},
+    };
+  }
+
+  // New method to record answers
+  void recordAnswer(int questionNumber, bool isCorrect) {
+    // Create a copy of the current answered questions
+    final currentAnswers = Map<int, bool>.from(state['answeredQuestions']);
+
+    // Add or update the answer for the specific question
+    currentAnswers[questionNumber] = isCorrect;
+
+    // Update the state with the new answered questions map
+    state = {
+      ...state,
+      'answeredQuestions': currentAnswers,
     };
   }
 
@@ -19,6 +35,13 @@ class QuestionNotifier extends _$QuestionNotifier {
     state = {
       'timelimit': 10,
       'questions': questions,
+      'answeredQuestions': <int, bool>{},
     };
   }
+
+  // Optional: Method to check if a question has been answered
+  bool isQuestionAnswered(int questionNumber) {
+    return state['answeredQuestions'].containsKey(questionNumber);
+  }
 }
+//dart run build_runner watch

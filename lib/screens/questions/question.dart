@@ -24,9 +24,6 @@ class _QuestionState extends ConsumerState<Question> {
   int _index = 0;
   bool _hasStarted = false; // New flag to track if timer should start
 
-  // Map to track answers: questionNumber -> isCorrect
-  final Map<int, bool> _answeredQuestions = {};
-
   // Timer variables
   int _timeLeft = 0;
   Timer? _timer;
@@ -60,7 +57,6 @@ class _QuestionState extends ConsumerState<Question> {
     // Reset all state variables
     setState(() {
       _hasStarted = false;
-      _answeredQuestions.clear();
       _currentPage = 0;
       _index = 0;
       _initializeTimer();
@@ -107,14 +103,19 @@ class _QuestionState extends ConsumerState<Question> {
 
   // Get color for the indicator based on answer status
   Color _getIndicatorColor(int index) {
-    final questions = ref.watch(questionNotifierProvider)['questions'];
-    if (!_answeredQuestions.containsKey(questions[index].questionNumber)) {
+    final state = ref.watch(questionNotifierProvider);
+    final questions = state['questions'];
+    final answeredQuestions = state['answeredQuestions'];
+
+    final currentQuestion = questions[index];
+
+    if (!answeredQuestions.containsKey(currentQuestion.questionNumber)) {
       return _index == index
           ? AppColors.primaryColor
           : Colors.grey.withOpacity(0.5);
     }
 
-    return _answeredQuestions[questions[index].questionNumber]!
+    return answeredQuestions[currentQuestion.questionNumber]!
         ? AppColors.successColor // Green for correct
         : AppColors.failureColor; // Red for incorrect
   }
@@ -127,11 +128,6 @@ class _QuestionState extends ConsumerState<Question> {
     if (!_hasStarted) {
       _startTimer();
     }
-
-    // Store the answer
-    setState(() {
-      _answeredQuestions[questions[_index].questionNumber] = isCorrect;
-    });
 
     // Wait a moment to show the answer feedback before scrolling
     Future.delayed(const Duration(milliseconds: 150), () {
@@ -150,10 +146,12 @@ class _QuestionState extends ConsumerState<Question> {
   }
 
   void _showCompletionDialog() {
-    final questions = ref.read(questionNotifierProvider)['questions'];
+    final state = ref.watch(questionNotifierProvider);
+    final questions = state['questions'];
+    final answeredQuestions = state['answeredQuestions'];
     // Calculate score
     int correctAnswers =
-        _answeredQuestions.values.where((isCorrect) => isCorrect).length;
+        answeredQuestions.values.where((isCorrect) => isCorrect).length;
 
     showDialog(
       context: context,
