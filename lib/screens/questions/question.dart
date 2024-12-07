@@ -148,10 +148,13 @@ class _QuestionState extends ConsumerState<Question> {
   void _showCompletionDialog() {
     final state = ref.watch(questionNotifierProvider);
     final questions = state['questions'];
-    final answeredQuestions = state['answeredQuestions'];
+    final answeredQuestions =
+        state['answeredQuestions'] as Map<int, bool>; // Explicit type casting;
+
     // Calculate score
-    int correctAnswers =
-        answeredQuestions.values.where((isCorrect) => isCorrect).length;
+    int correctAnswers = answeredQuestions.values
+        .where((isCorrect) => isCorrect == true) // Explicit boolean comparison
+        .length;
 
     showDialog(
       context: context,
