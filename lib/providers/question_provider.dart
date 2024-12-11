@@ -1,4 +1,5 @@
 import 'package:numeracy_app/models/question.dart';
+import 'package:numeracy_app/models/question_response.dart';
 import 'package:numeracy_app/services/question_generator.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -11,17 +12,19 @@ class QuestionNotifier extends _$QuestionNotifier {
     return {
       'timelimit': 10,
       'questions': generateRandomQuestions(),
-      'answeredQuestions': <int, bool>{},
+      'answeredQuestions': <int, QuestionResponse>{},
     };
   }
 
-  // New method to record answers
-  void recordAnswer(int questionNumber, bool isCorrect) {
+  // method to record answers
+  void recordAnswer(int questionNumber, bool isCorrect, String selectedOption) {
     // Create a copy of the current answered questions
-    final currentAnswers = Map<int, bool>.from(state['answeredQuestions']);
+    final currentAnswers =
+        Map<int, QuestionResponse>.from(state['answeredQuestions']);
 
     // Add or update the answer for the specific question
-    currentAnswers[questionNumber] = isCorrect;
+    currentAnswers[questionNumber] =
+        QuestionResponse(isCorrect: isCorrect, selectedOption: selectedOption);
 
     // Update the state with the new answered questions map
     state = {
@@ -35,11 +38,16 @@ class QuestionNotifier extends _$QuestionNotifier {
     state = {
       'timelimit': 10,
       'questions': questions,
-      'answeredQuestions': <int, bool>{},
+      'answeredQuestions': <int, QuestionResponse>{},
     };
   }
 
-  // Optional: Method to check if a question has been answered
+  // Method to get a specific question's response
+  QuestionResponse? getQuestionResponse(int questionNumber) {
+    return state['answeredQuestions'][questionNumber];
+  }
+
+  // Method to check if a question has been answered
   bool isQuestionAnswered(int questionNumber) {
     return state['answeredQuestions'].containsKey(questionNumber);
   }

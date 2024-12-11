@@ -1,6 +1,7 @@
 class QuestionResponse {
   final bool isCorrect;
-  final String selectedId;
+  final String selectedOption;
 
-  const QuestionResponse({required this.isCorrect, required this.selectedId});
+  const QuestionResponse(
+      {required this.isCorrect, required this.selectedOption});
 }

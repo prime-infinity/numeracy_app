@@ -11,16 +11,13 @@ class QuestionCard extends ConsumerStatefulWidget {
 
   final Question question;
   final double visibility;
-  final void Function(bool isCorrect) onAnswerSelected;
+  final void Function() onAnswerSelected;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _QuestionCardState();
 }
 
 class _QuestionCardState extends ConsumerState<QuestionCard> {
-  String? selectedOptionId;
-  bool? isCorrect;
-
   void _handleOptionSelection(String optionId, int answerValue) {
     // Check if the question has already been answered
     final questionNumber = widget.question.questionNumber;
@@ -30,22 +27,46 @@ class _QuestionCardState extends ConsumerState<QuestionCard> {
       return;
     }
 
-    setState(() {
-      selectedOptionId = optionId;
-      isCorrect = widget.question.isCorrect(answerValue);
-    });
-
     //record the answer in the provider
-    questionNotifier.recordAnswer(questionNumber, isCorrect!);
+    questionNotifier.recordAnswer(
+        questionNumber, widget.question.isCorrect(answerValue), optionId);
 
-    widget.onAnswerSelected(isCorrect!);
+    widget.onAnswerSelected();
   }
 
-  Color _getOptionColor(String optionId) {
-    if (selectedOptionId == null) return AppColors.white;
+  Color _getOptionColor(int questionNumber, String optionId) {
+    //check if this question has been answered at all.
+    //i.e if the questionNumber exsist in QuestionResponse
+    final questionNotifier = ref.watch(questionNotifierProvider.notifier);
 
-    if (selectedOptionId == optionId) {
-      return isCorrect! ? AppColors.successColor : AppColors.failureColor;
+    //if question not yet answered, then white
+    if (!questionNotifier.isQuestionAnswered(questionNumber)) {
+      return AppColors.white;
+    }
+
+    //if question answered, check if answered correctly
+    if (questionNotifier.isQuestionAnswered(questionNumber)) {
+      //get response of question
+      final questionRes = questionNotifier.getQuestionResponse(questionNumber);
+      final correctOption = widget.question.getCorrectOptionId();
+
+      //if got it correct
+      if (questionRes!.isCorrect) {
+        //check if this optionid is the selected
+        if (optionId == questionRes.selectedOption) {
+          return AppColors.successColor;
+        }
+      }
+      //if got wrong
+      if (!questionRes.isCorrect) {
+        if (optionId == questionRes.selectedOption) {
+          return AppColors.failureColor;
+        }
+        // Color the correct option green
+        if (optionId == correctOption) {
+          return AppColors.successColor;
+        }
+      }
     }
 
     return AppColors.white;
@@ -104,29 +125,18 @@ class _QuestionCardState extends ConsumerState<QuestionCard> {
                       return AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         child: GestureDetector(
-                          onTap: selectedOptionId == null
-                              ? () =>
-                                  _handleOptionSelection(optionId, optionValue)
-                              : null,
+                          onTap: () =>
+                              _handleOptionSelection(optionId, optionValue),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: _getOptionColor(optionId),
+                              color: _getOptionColor(
+                                  widget.question.questionNumber, optionId),
                               borderRadius: BorderRadius.circular(20),
-                              border: selectedOptionId == optionId
-                                  ? Border.all(
-                                      color: isCorrect!
-                                          ? AppColors.successBorder
-                                          : AppColors.failureBorder,
-                                      width: 2,
-                                    )
-                                  : null,
                             ),
                             alignment: Alignment.center,
                             child: StyledOptionsText(
                               optionValue.toString(),
-                              selectedOptionId == optionId
-                                  ? AppColors.white
-                                  : AppColors.black,
+                              AppColors.black,
                             ),
                           ),
                         ),

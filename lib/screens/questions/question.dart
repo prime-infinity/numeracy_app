@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:numeracy_app/models/question_response.dart';
 import 'package:numeracy_app/providers/question_provider.dart';
 import 'package:numeracy_app/screens/questions/question_card.dart';
 import 'package:numeracy_app/services/question_generator.dart';
@@ -109,19 +110,20 @@ class _QuestionState extends ConsumerState<Question> {
 
     final currentQuestion = questions[index];
 
+    // Check if the question has been answered
     if (!answeredQuestions.containsKey(currentQuestion.questionNumber)) {
       return _index == index
           ? AppColors.primaryColor
           : Colors.grey.withOpacity(0.5);
     }
 
-    return answeredQuestions[currentQuestion.questionNumber]!
+    return answeredQuestions[currentQuestion.questionNumber]!.isCorrect
         ? AppColors.successColor // Green for correct
         : AppColors.failureColor; // Red for incorrect
   }
 
   // Handle answer selection
-  void _handleAnswerSelected(bool isCorrect) {
+  void _handleAnswerSelected() {
     final questions = ref.watch(questionNotifierProvider)['questions'];
 
     // Start timer on first attempt if not already started
@@ -148,12 +150,12 @@ class _QuestionState extends ConsumerState<Question> {
   void _showCompletionDialog() {
     final state = ref.watch(questionNotifierProvider);
     final questions = state['questions'];
-    final answeredQuestions =
-        state['answeredQuestions'] as Map<int, bool>; // Explicit type casting;
+    final answeredQuestions = state['answeredQuestions']
+        as Map<int, QuestionResponse>; // Explicit type casting;
 
     // Calculate score
     int correctAnswers = answeredQuestions.values
-        .where((isCorrect) => isCorrect == true) // Explicit boolean comparison
+        .where((response) => response.isCorrect) // Explicit boolean comparison
         .length;
 
     showDialog(

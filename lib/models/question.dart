@@ -30,31 +30,15 @@ class Question {
 
   // Check answer directly
   bool isCorrect(int answer) => answer == _result;
+
+  // Method to get the correct option
+  String getCorrectOptionId() {
+    return _options
+        .firstWhere((option) => option.values.first == _result)
+        .keys
+        .first;
+  }
 }
-
-
-/**
- * <int, bool>{}
- * 1 = true;
- * 2 = false;
- * 
- * what i want
- * 1 = {true, selectedID}
- * 2 = {false, selectedID}
- * like below
- * 1 = {true, 'a'}
- * 2 = {false, 'c'}
- *  
- * solution(create a custom class)
- * class QuestionResponse{
- *  bool isCorrect, String selectedId
- * }
- * 
- */
-
-
-
-
 
 
 /*
