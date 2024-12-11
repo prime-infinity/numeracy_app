@@ -39,13 +39,23 @@ class Question {
  * 2 = false;
  * 
  * what i want
- * 1 = {true, selectedID, correctID}
- * 2 = {false, selectedID, correctID}
+ * 1 = {true, selectedID}
+ * 2 = {false, selectedID}
  * like below
- * 1 = {true, 'a', 'a'}
- * 2 = {false, 'c', 'd'}
+ * 1 = {true, 'a'}
+ * 2 = {false, 'c'}
+ *  
+ * solution(create a custom class)
+ * class QuestionResponse{
+ *  bool isCorrect, String selectedId
+ * }
  * 
  */
+
+
+
+
+
 
 /*
 from typescript
