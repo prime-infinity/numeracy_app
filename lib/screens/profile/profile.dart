@@ -51,7 +51,7 @@ class Profile extends StatelessWidget {
             StyledTitleMediumText("Statistics", AppColors.black),
             GridView.count(
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,

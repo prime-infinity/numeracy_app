@@ -32,6 +32,21 @@ class Question {
   bool isCorrect(int answer) => answer == _result;
 }
 
+
+/**
+ * <int, bool>{}
+ * 1 = true;
+ * 2 = false;
+ * 
+ * what i want
+ * 1 = {true, selectedID, correctID}
+ * 2 = {false, selectedID, correctID}
+ * like below
+ * 1 = {true, 'a', 'a'}
+ * 2 = {false, 'c', 'd'}
+ * 
+ */
+
 /*
 from typescript
 export interface Question{
