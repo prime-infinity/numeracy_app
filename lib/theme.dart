@@ -9,7 +9,7 @@ class AppColors {
   static Color failureBorder = const Color(0xFFD32F2F);
   static Color black = const Color.fromARGB(255, 19, 18, 18);
   static Color white = const Color.fromARGB(255, 246, 246, 243);
-  static Color cardGrey = const Color.fromARGB(255, 246, 246, 243);
+  static Color cardGrey = const Color.fromARGB(255, 218, 218, 218);
 }
 
 class AppDimensions {
@@ -21,10 +21,10 @@ ThemeData primaryTheme = ThemeData(
   colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
   textTheme: const TextTheme(
       bodySmall: TextStyle(
-          fontSize: 14, letterSpacing: 1, fontWeight: FontWeight.w400),
+          fontSize: 12, letterSpacing: 1, fontWeight: FontWeight.w400),
       bodyMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
       bodyLarge: TextStyle(
           fontSize: 60, letterSpacing: 1, fontWeight: FontWeight.w700),
-      titleSmall: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+      titleSmall: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
       titleMedium: TextStyle(fontSize: 35, fontWeight: FontWeight.w600)),
 );
