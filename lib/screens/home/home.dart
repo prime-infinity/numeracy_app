@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
@@ -21,7 +22,7 @@ class _HomeState extends State<Home> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.25),
+            padding: const EdgeInsets.all(12.25),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,7 +35,7 @@ class _HomeState extends State<Home> {
                         BorderRadius.circular(AppDimensions.cardRadius),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(25.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Row(
                       children: [
                         Container(
@@ -58,7 +59,7 @@ class _HomeState extends State<Home> {
                               StyledTitleSmallText(
                                   "Random Questions", AppColors.black),
                               StyledSmallText(
-                                  "Enhance your mental agility and problem-solving skills throug",
+                                  "Randomize questions from different categories",
                                   AppColors.black)
                             ],
                           ),
@@ -74,29 +75,33 @@ class _HomeState extends State<Home> {
                     child: Row(
                       children: [
                         _buildCard(
-                          title: 'Addition Questions',
+                          title: 'Addition',
                           description:
                               'Enhance your mental agility and problem-solving skills through addition exercises.',
+                          icon: Icons.add,
                         ),
-                        const SizedBox(width: 5),
+                        const SizedBox(width: 6),
                         _buildCard(
-                          title: 'Subtraction Questions',
+                          title: 'Subtraction',
                           description:
                               'Enhance your mental agility and problem-solving skills through subtraction exercises.',
+                          icon: Icons.remove,
                         ),
-                        const SizedBox(width: 5),
+                        const SizedBox(width: 6),
                         _buildCard(
-                          title: 'Multiplication Questions',
+                          title: 'Multiplication',
                           description:
                               'Enhance your mental agility and problem-solving skills through multiplication exercises.',
+                          icon: Icons.close,
                         ),
-                        const SizedBox(width: 5),
+                        const SizedBox(width: 6),
                         _buildCard(
-                          title: 'Division Questions',
+                          title: 'Division',
                           description:
                               'Enhance your mental agility and problem-solving skills through division exercises.',
+                          icon: CupertinoIcons.divide,
                         ),
-                        const SizedBox(width: 5),
+                        const SizedBox(width: 6),
                       ],
                     ))
               ],
@@ -107,23 +112,36 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _buildCard({required String title, required String description}) {
+  Widget _buildCard({
+    required String title,
+    required String description,
+    required IconData icon,
+  }) {
     return Container(
       width: 168,
       height: 168,
       decoration: BoxDecoration(
-        color: AppColors.cardGrey,
+        color: const Color.fromARGB(255, 234, 234, 234),
         borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
       ),
-      child: const Padding(
-        padding: EdgeInsets.all(16.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(
-              Icons.add,
-              size: 18,
+            Container(
+              width: 35.5,
+              height: 35.5,
+              decoration: BoxDecoration(
+                  color: AppColors.primaryAccent,
+                  borderRadius: BorderRadius.circular(12)),
+              child: Icon(
+                icon,
+                size: 20,
+              ),
             ),
+            SizedBox(height: 14),
+            StyledSmallText(title, AppColors.black)
           ],
         ),
       ),
