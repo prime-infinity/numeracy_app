@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:numeracy_app/screens/home/home.dart';
+import 'package:numeracy_app/screens/questions/question.dart';
 import 'package:numeracy_app/shared/buttons/styled_button.dart';
 import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
@@ -19,10 +20,12 @@ class MyApp extends StatelessWidget {
 
   late final GoRouter _router = GoRouter(
     routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const Home(),
-      ),
+      GoRoute(path: '/', builder: (context, state) => const Home(), routes: [
+        GoRoute(
+          path: 'questions',
+          builder: (context, state) => const Question(),
+        ),
+      ]),
       // You can add more routes here later
     ],
     // Optional: Add error handling
