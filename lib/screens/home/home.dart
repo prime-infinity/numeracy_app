@@ -140,7 +140,7 @@ class _HomeState extends State<Home> {
                 size: 20,
               ),
             ),
-            SizedBox(height: 14),
+            const SizedBox(height: 14),
             StyledSmallText(title, AppColors.black)
           ],
         ),

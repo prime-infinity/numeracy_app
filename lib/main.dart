@@ -1,17 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:numeracy_app/screens/home/home.dart';
 import 'package:numeracy_app/shared/buttons/styled_button.dart';
 import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
 
 void main() {
-  runApp(ProviderScope(
-    child: MaterialApp(
-      theme: primaryTheme,
-      home: const Home(),
+  runApp(
+    ProviderScope(
+      child: MyApp(),
     ),
-  ));
+  );
+}
+
+class MyApp extends StatelessWidget {
+  MyApp({super.key});
+
+  late final GoRouter _router = GoRouter(
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const Home(),
+      ),
+      // You can add more routes here later
+    ],
+    // Optional: Add error handling
+    errorBuilder: (context, state) => ErrorScreen(error: state.error),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      theme: primaryTheme,
+      routerConfig: _router,
+      title: 'Numeracy',
+    );
+  }
+}
+
+// Optional error screen for handling navigation errors
+class ErrorScreen extends StatelessWidget {
+  final Exception? error;
+
+  const ErrorScreen({super.key, this.error});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Error')),
+      body: Center(
+        child: Text('Something went wrong: ${error.toString()}'),
+      ),
+    );
+  }
 }
 
 class Sandbox extends StatelessWidget {
