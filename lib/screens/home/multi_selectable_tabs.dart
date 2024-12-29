@@ -10,7 +10,7 @@ class MultiSelectableTabs extends StatefulWidget {
 
 class MultiSelectableTabsState extends State<MultiSelectableTabs> {
   // Track selected tabs
-  final List<bool> _selectedTabs = [false, false, false, false];
+  final List<bool> _selectedTabs = [true, false, false, false];
 
   // Tab data
   final List<Map<String, String>> _tabs = [
@@ -44,6 +44,11 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
               bottomLeft: Radius.circular(
                   AppDimensions.cardRadius), // Adjust the radius as needed
               bottomRight: Radius.circular(AppDimensions.cardRadius),
+              topRight: Radius.circular(_selectedTabs[_selectedTabs.length - 1]
+                  ? 0
+                  : AppDimensions.cardRadius),
+              topLeft: Radius.circular(
+                  _selectedTabs[0] ? 0 : AppDimensions.cardRadius),
             ),
           ),
           child: Padding(
