@@ -75,80 +75,10 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 const SizedBox(height: 20), // Add some spacing
-                //question options, horizontal list
-                SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        _buildCard(
-                          title: 'Addition',
-                          description:
-                              'Enhance your mental agility and problem-solving skills through addition exercises.',
-                          icon: Icons.add,
-                        ),
-                        const SizedBox(width: 6),
-                        _buildCard(
-                          title: 'Subtraction',
-                          description:
-                              'Enhance your mental agility and problem-solving skills through subtraction exercises.',
-                          icon: Icons.remove,
-                        ),
-                        const SizedBox(width: 6),
-                        _buildCard(
-                          title: 'Multiplication',
-                          description:
-                              'Enhance your mental agility and problem-solving skills through multiplication exercises.',
-                          icon: Icons.close,
-                        ),
-                        const SizedBox(width: 6),
-                        _buildCard(
-                          title: 'Division',
-                          description:
-                              'Enhance your mental agility and problem-solving skills through division exercises.',
-                          icon: CupertinoIcons.divide,
-                        ),
-                        const SizedBox(width: 6),
-                      ],
-                    ))
+                //question options, tab view
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCard({
-    required String title,
-    required String description,
-    required IconData icon,
-  }) {
-    return Container(
-      width: 168,
-      height: 168,
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 234, 234, 234),
-        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 35.5,
-              height: 35.5,
-              decoration: BoxDecoration(
-                  color: AppColors.primaryAccent,
-                  borderRadius: BorderRadius.circular(12)),
-              child: Icon(
-                icon,
-                size: 20,
-              ),
-            ),
-            const SizedBox(height: 14),
-            StyledSmallText(title, AppColors.black)
-          ],
         ),
       ),
     );

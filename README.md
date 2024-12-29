@@ -32,6 +32,7 @@ In the architecture of the app, an effort is made to follow an organized and sim
 All global data type modelling and methods are done in the "models" folder. All global state and notifiers are done in the "providers" folder.
 Other services that help the app perform additional tasks are done in the "services" folder.
 The "screen" folder hold individual screens "only". the components/widgets that are in the individual screen (if going to be reused) are to be moved to another folder //TODO:create this folder
+if there are widgets that are not going to be reused, but for the sake of seperation and clarity, should be done as seperate widgets under the same "screen"
 
 ### Models
 
