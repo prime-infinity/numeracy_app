@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:numeracy_app/theme.dart';
 
 class MultiSelectableTabs extends StatefulWidget {
   const MultiSelectableTabs({super.key});
@@ -12,11 +13,11 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
   final List<bool> _selectedTabs = [false, false, false, false];
 
   // Tab data
-  final List<Map<String, dynamic>> _tabs = [
-    {'icon': '+', 'color': const Color(0xFFE6E6FA)}, // Light purple
-    {'icon': '−', 'color': const Color(0xFF00FF9D)}, // Green
-    {'icon': '×', 'color': const Color(0xFF00FF9D)}, // Green
-    {'icon': '−', 'color': const Color(0xFF00FF9D)}, // Green
+  final List<Map<String, String>> _tabs = [
+    {'icon': '+'},
+    {'icon': '−'},
+    {'icon': '×'},
+    {'icon': '−'},
   ];
 
   @override
@@ -25,9 +26,9 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
       children: [
         // Tab row
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.only(bottom: 13.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(
               _tabs.length,
               (index) => _buildTab(index),
@@ -36,51 +37,61 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
         ),
 
         // Difficulty level section
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Difficulty Level',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Enhance your mental agility and problem solving skills through',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  _buildDifficultyChip('1 - 10'),
-                  const SizedBox(width: 8),
-                  _buildDifficultyChip('10 - 100'),
-                  const SizedBox(width: 8),
-                  _buildDifficultyChip('100 - 1000'),
-                ],
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  // Add your begin logic here
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(double.infinity, 48),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.primaryAccent, // Background color of the container
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(
+                  AppDimensions.cardRadius), // Adjust the radius as needed
+              bottomRight: Radius.circular(AppDimensions.cardRadius),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Difficulty Level',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                child: const Text('Begin'),
-              ),
-            ],
+                const SizedBox(height: 8),
+                Text(
+                  'Enhance your mental agility and problem solving skills through',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    _buildDifficultyChip('1 - 10'),
+                    const SizedBox(width: 8),
+                    _buildDifficultyChip('10 - 100'),
+                    const SizedBox(width: 8),
+                    _buildDifficultyChip('100 - 1000'),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    // Add your begin logic here
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                  ),
+                  child: const Text('Begin'),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -95,24 +106,31 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
         });
       },
       child: Container(
-        width: 60,
-        height: 60,
         decoration: BoxDecoration(
-          color:
-              _selectedTabs[index] ? _tabs[index]['color'] : Colors.grey[200],
-          borderRadius: BorderRadius.circular(12),
+          color: _selectedTabs[index]
+              ? AppColors.primaryColor
+              : AppColors.primaryAccent,
           // Add connected effect when selected
-          /*borderRadius: BorderRadius.vertical(
-            top: Radius.circular(12),
+          borderRadius: BorderRadius.vertical(
+            top: const Radius.circular(12),
             bottom: Radius.circular(_selectedTabs[index] ? 0 : 12),
-          ),*/
+          ),
         ),
-        child: Center(
-          child: Text(
-            _tabs[index]['icon'],
-            style: TextStyle(
-              fontSize: 24,
-              color: _selectedTabs[index] ? Colors.white : Colors.grey[600],
+        child: Padding(
+          padding: const EdgeInsets.all(13.0),
+          child: Container(
+            width: 61.5,
+            height: 61.5,
+            decoration: BoxDecoration(
+                color: AppColors.white, borderRadius: BorderRadius.circular(8)),
+            child: Center(
+              child: Text(
+                _tabs[index]['icon'] ?? '',
+                style: TextStyle(
+                  fontSize: 24,
+                  color: AppColors.black,
+                ),
+              ),
             ),
           ),
         ),

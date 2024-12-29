@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:numeracy_app/screens/home/multi_selectable_tabs.dart';
 import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
 
@@ -74,8 +75,9 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20), // Add some spacing
+                const SizedBox(height: 120), // Add some spacing
                 //question options, tab view
+                const MultiSelectableTabs(),
               ],
             ),
           ),
