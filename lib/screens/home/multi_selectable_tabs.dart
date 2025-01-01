@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:numeracy_app/screens/home/convex_extension_painter.dart';
 import 'package:numeracy_app/theme.dart';
 
 class MultiSelectableTabs extends StatefulWidget {
@@ -24,18 +25,44 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Tab row
-        Padding(
-          padding: const EdgeInsets.only(bottom: 13.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: List.generate(
-              _tabs.length,
-              (index) => _buildTab(index),
+        Stack(children: [
+          // Tab row
+          Padding(
+            padding: const EdgeInsets.only(bottom: 13.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(
+                _tabs.length,
+                (index) => _buildTab(index),
+              ),
             ),
           ),
-        ),
-
+          // Extension containers for selected tabs
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(
+                _tabs.length,
+                (index) => _selectedTabs[index]
+                    ? CustomPaint(
+                        painter: ConvexExtensionPainter(
+                          curveLeft: index > 0,
+                          curveRight: index < _tabs.length - 1,
+                          color: AppColors.primaryColor,
+                        ),
+                        child: Container(
+                          width: 87.5,
+                          height: 15.0,
+                        ),
+                      )
+                    : Container(width: 87.5),
+              ),
+            ),
+          ),
+        ]),
         // Difficulty level section
         Container(
           decoration: BoxDecoration(
