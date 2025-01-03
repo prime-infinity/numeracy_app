@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class ConvexExtensionPainter extends CustomPainter {
+class ConcaveExtensionPainter extends CustomPainter {
   final bool curveLeft;
   final bool curveRight;
   final Color color;
 
-  ConvexExtensionPainter({
+  ConcaveExtensionPainter({
     required this.curveLeft,
     required this.curveRight,
     required this.color,
@@ -25,8 +25,9 @@ class ConvexExtensionPainter extends CustomPainter {
 
     // Right side
     if (curveRight) {
-      path.quadraticBezierTo(
-          size.width - 12, size.height / 2, size.width, size.height);
+      /*path.quadraticBezierTo(
+          size.width - 12, size.height / 2, size.width, size.height);*/
+      path.lineTo(size.width, size.height);
     } else {
       path.lineTo(size.width, size.height);
     }
@@ -36,7 +37,8 @@ class ConvexExtensionPainter extends CustomPainter {
 
     // Left side
     if (curveLeft) {
-      path.quadraticBezierTo(12, size.height / 2, 0, 0);
+      //path.quadraticBezierTo(12, size.height / 2, 0, 0);
+      path.lineTo(0, 0);
     } else {
       path.lineTo(0, 0);
     }

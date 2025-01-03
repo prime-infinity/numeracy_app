@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:numeracy_app/screens/home/convex_extension_painter.dart';
+import 'package:numeracy_app/screens/home/concave_extension_painter.dart';
 import 'package:numeracy_app/theme.dart';
 
 class MultiSelectableTabs extends StatefulWidget {
@@ -48,7 +48,7 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
                 _tabs.length,
                 (index) => _selectedTabs[index]
                     ? CustomPaint(
-                        painter: ConvexExtensionPainter(
+                        painter: ConcaveExtensionPainter(
                           curveLeft: index > 0,
                           curveRight: index < _tabs.length - 1,
                           color: AppColors.primaryColor,
