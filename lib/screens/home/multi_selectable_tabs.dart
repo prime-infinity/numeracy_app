@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:numeracy_app/screens/home/concave_extension_painter.dart';
+import 'package:numeracy_app/shared/buttons/styled_button.dart';
+import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
 
 class MultiSelectableTabs extends StatefulWidget {
@@ -51,9 +53,9 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
                         painter: ConcaveExtensionPainter(
                           curveLeft: index > 0,
                           curveRight: index < _tabs.length - 1,
-                          color: AppColors.primaryColor,
+                          color: AppColors.primaryAccent,
                         ),
-                        child: Container(
+                        child: const SizedBox(
                           width: 87.5,
                           height: 15.0,
                         ),
@@ -79,26 +81,16 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 36.0, vertical: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Difficulty Level',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                StyledTitleMediumText("Difficulty Level", AppColors.black),
                 const SizedBox(height: 8),
-                Text(
-                  'Enhance your mental agility and problem solving skills through',
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                  ),
-                ),
+                StyledSmallText("Select a difficulty level", Colors.grey[600]!),
                 const SizedBox(height: 16),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildDifficultyChip('1 - 10'),
                     const SizedBox(width: 8),
@@ -108,20 +100,9 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    // Add your begin logic here
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 48),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                  ),
-                  child: const Text('Begin'),
-                ),
+                Center(
+                    child: StyledButton(
+                        text: "Begin", width: 251, onPressed: () {}))
               ],
             ),
           ),
@@ -140,8 +121,8 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
       child: Container(
         decoration: BoxDecoration(
           color: _selectedTabs[index]
-              ? AppColors.primaryColor
-              : AppColors.primaryAccent,
+              ? AppColors.primaryAccent
+              : AppColors.cardGrey,
           // Add connected effect when selected
           borderRadius: BorderRadius.vertical(
             top: const Radius.circular(12),
@@ -154,7 +135,10 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
             width: 61.5,
             height: 61.5,
             decoration: BoxDecoration(
-                color: AppColors.white, borderRadius: BorderRadius.circular(8)),
+                color: _selectedTabs[index]
+                    ? AppColors.primaryAccent
+                    : AppColors.white,
+                borderRadius: BorderRadius.circular(8)),
             child: Center(
               child: Text(
                 _tabs[index]['icon'] ?? '',
@@ -174,7 +158,7 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(color: AppColors.black),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(label),

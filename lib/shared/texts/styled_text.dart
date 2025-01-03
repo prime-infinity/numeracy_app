@@ -76,6 +76,21 @@ class StyledTitleMediumText extends StatelessWidget {
   }
 }
 
+class StyledTitleLargeText extends StatelessWidget {
+  const StyledTitleLargeText(this.text, this.color, {super.key});
+  final String text;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: GoogleFonts.poppins(
+          textStyle: Theme.of(context).textTheme.titleLarge, color: color),
+    );
+  }
+}
+
 class StyledOptionsText extends StatelessWidget {
   const StyledOptionsText(this.text, this.color, {super.key});
   final String text;
