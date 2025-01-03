@@ -92,7 +92,7 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildDifficultyChip('1 - 10'),
+                    //_buildDifficultyChip('1 - 10'),
                     const SizedBox(width: 8),
                     _buildDifficultyChip('10 - 100'),
                     const SizedBox(width: 8),
