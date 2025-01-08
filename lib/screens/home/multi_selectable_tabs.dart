@@ -53,7 +53,7 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
                         painter: ConcaveExtensionPainter(
                           curveLeft: index > 0,
                           curveRight: index < _tabs.length - 1,
-                          color: AppColors.primaryAccent,
+                          color: AppColors.cardGrey,
                         ),
                         child: const SizedBox(
                           width: 87.5,
@@ -68,7 +68,7 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
         // Difficulty level section
         Container(
           decoration: BoxDecoration(
-            color: AppColors.primaryAccent, // Background color of the container
+            color: AppColors.cardGrey, // Background color of the container
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(
                   AppDimensions.cardRadius), // Adjust the radius as needed
@@ -120,13 +120,11 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: _selectedTabs[index]
-              ? AppColors.primaryAccent
-              : AppColors.cardGrey,
+          color: _selectedTabs[index] ? AppColors.cardGrey : AppColors.cardGrey,
           // Add connected effect when selected
           borderRadius: BorderRadius.vertical(
-            top: const Radius.circular(12),
-            bottom: Radius.circular(_selectedTabs[index] ? 0 : 12),
+            top: const Radius.circular(22),
+            bottom: Radius.circular(_selectedTabs[index] ? 0 : 22),
           ),
         ),
         child: Padding(
@@ -137,8 +135,8 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
             decoration: BoxDecoration(
                 color: _selectedTabs[index]
                     ? AppColors.primaryAccent
-                    : AppColors.white,
-                borderRadius: BorderRadius.circular(8)),
+                    : AppColors.cardGrey,
+                borderRadius: BorderRadius.circular(18)),
             child: Center(
               child: Text(
                 _tabs[index]['icon'] ?? '',

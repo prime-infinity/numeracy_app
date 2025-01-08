@@ -23,7 +23,7 @@ class _HomeState extends State<Home> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(12.25),
+            padding: const EdgeInsets.all(15),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,19 +35,20 @@ class _HomeState extends State<Home> {
                   child: Container(
                     height: 124.37,
                     decoration: BoxDecoration(
-                      color: AppColors.primaryAccent,
+                      color: AppColors.white,
+                      border: Border.all(color: AppColors.black),
                       borderRadius:
                           BorderRadius.circular(AppDimensions.cardRadius),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(20.0),
                       child: Row(
                         children: [
                           Container(
-                            width: 64,
-                            height: 64,
+                            width: 70,
+                            height: 70,
                             decoration: BoxDecoration(
-                                color: AppColors.white,
+                                color: AppColors.primaryAccent,
                                 borderRadius: BorderRadius.circular(16)),
                             child: Icon(
                               Icons.shuffle,
