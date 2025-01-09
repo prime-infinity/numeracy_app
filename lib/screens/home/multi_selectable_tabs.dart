@@ -20,7 +20,7 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
     {'icon': '+'},
     {'icon': '−'},
     {'icon': '×'},
-    {'icon': '−'},
+    {'icon': '/'},
   ];
 
   @override
@@ -66,7 +66,9 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
           ),
         ]),
         // Difficulty level section
-        Container(
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 300), // Animation duration
+          curve: Curves.easeInOut,
           decoration: BoxDecoration(
             color: AppColors.cardGrey, // Background color of the container
             borderRadius: BorderRadius.only(
@@ -118,7 +120,9 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
           _selectedTabs[index] = !_selectedTabs[index];
         });
       },
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300), // Animation duration
+        curve: Curves.easeInOut, // Animation curve for smooth transition
         decoration: BoxDecoration(
           color: _selectedTabs[index] ? AppColors.cardGrey : AppColors.cardGrey,
           // Add connected effect when selected
@@ -129,7 +133,9 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
         ),
         child: Padding(
           padding: const EdgeInsets.all(10.0),
-          child: Container(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
             width: 61.5,
             height: 61.5,
             decoration: BoxDecoration(
