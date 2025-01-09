@@ -56,11 +56,11 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
                           color: AppColors.cardGrey,
                         ),
                         child: const SizedBox(
-                          width: 87.5,
+                          width: 81.0,
                           height: 15.0,
                         ),
                       )
-                    : Container(width: 87.5),
+                    : Container(width: 81.0),
               ),
             ),
           ),
@@ -128,21 +128,21 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(13.0),
+          padding: const EdgeInsets.all(10.0),
           child: Container(
             width: 61.5,
             height: 61.5,
             decoration: BoxDecoration(
                 color: _selectedTabs[index]
-                    ? AppColors.primaryAccent
-                    : AppColors.cardGrey,
+                    ? AppColors.primaryColor
+                    : AppColors.primaryAccent,
                 borderRadius: BorderRadius.circular(18)),
             child: Center(
               child: Text(
                 _tabs[index]['icon'] ?? '',
                 style: TextStyle(
                   fontSize: 24,
-                  color: AppColors.black,
+                  color: AppColors.white,
                 ),
               ),
             ),

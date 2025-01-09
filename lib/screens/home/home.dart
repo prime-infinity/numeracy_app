@@ -48,12 +48,12 @@ class _HomeState extends State<Home> {
                             width: 70,
                             height: 70,
                             decoration: BoxDecoration(
-                                color: AppColors.primaryAccent,
+                                color: AppColors.primaryColor,
                                 borderRadius: BorderRadius.circular(16)),
                             child: Icon(
                               Icons.shuffle,
                               size: 24,
-                              color: AppColors.black,
+                              color: AppColors.white,
                             ),
                           ),
                           const SizedBox(width: 15),
