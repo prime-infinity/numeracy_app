@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:numeracy_app/screens/home/concave_extension_painter.dart';
+import 'package:numeracy_app/screens/home/animated_tab_button.dart';
 import 'package:numeracy_app/shared/buttons/styled_button.dart';
 import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
@@ -13,7 +13,8 @@ class MultiSelectableTabs extends StatefulWidget {
 
 class MultiSelectableTabsState extends State<MultiSelectableTabs> {
   // Track selected tabs
-  final List<bool> _selectedTabs = [true, false, false, false];
+  final List<bool> _selectedTabs = [false, false, false, false];
+  final List<double> _animationProgress = [1.0, 0.0, 0.0, 0.0];
 
   // Tab data
   final List<Map<String, String>> _tabs = [
@@ -40,30 +41,7 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
             ),
           ),
           // Extension containers for selected tabs
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(
-                _tabs.length,
-                (index) => _selectedTabs[index]
-                    ? CustomPaint(
-                        painter: ConcaveExtensionPainter(
-                          curveLeft: index > 0,
-                          curveRight: index < _tabs.length - 1,
-                          color: AppColors.cardGrey,
-                        ),
-                        child: const SizedBox(
-                          width: 81.0,
-                          height: 15.0,
-                        ),
-                      )
-                    : Container(width: 81.0),
-              ),
-            ),
-          ),
+          _buildExtensionContainers(),
         ]),
         // Difficulty level section
         AnimatedContainer(
@@ -113,45 +91,44 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
     );
   }
 
+  void _handleTabPress(int index) {
+    setState(() {
+      _selectedTabs[index] = !_selectedTabs[index];
+      if (!_selectedTabs[index]) {
+        _animationProgress[index] = 0.0;
+      }
+    });
+  }
+
+  void _handleAnimationProgress(int index, double progress) {
+    setState(() {
+      _animationProgress[index] = progress;
+    });
+  }
+
+  // Usage example for _buildTab:
   Widget _buildTab(int index) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedTabs[index] = !_selectedTabs[index];
-        });
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300), // Animation duration
-        curve: Curves.easeInOut, // Animation curve for smooth transition
-        decoration: BoxDecoration(
-          color: _selectedTabs[index] ? AppColors.cardGrey : AppColors.cardGrey,
-          // Add connected effect when selected
-          borderRadius: BorderRadius.vertical(
-            top: const Radius.circular(22),
-            bottom: Radius.circular(_selectedTabs[index] ? 0 : 22),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            width: 61.5,
-            height: 61.5,
-            decoration: BoxDecoration(
-                color: _selectedTabs[index]
-                    ? AppColors.primaryColor
-                    : AppColors.primaryAccent,
-                borderRadius: BorderRadius.circular(18)),
-            child: Center(
-              child: Text(
-                _tabs[index]['icon'] ?? '',
-                style: TextStyle(
-                  fontSize: 24,
-                  color: AppColors.white,
-                ),
-              ),
-            ),
+    return AnimatedTabButton(
+      isSelected: _selectedTabs[index],
+      icon: _tabs[index]['icon'] ?? '',
+      onTap: () => _handleTabPress(index),
+      onAnimationProgress: (progress) =>
+          _handleAnimationProgress(index, progress),
+    );
+  }
+
+  Widget _buildExtensionContainers() {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: List.generate(
+          _tabs.length,
+          (index) => AnimatedExtensionContainer(
+            isSelected: _selectedTabs[index],
+            animationProgress: _animationProgress[index],
           ),
         ),
       ),

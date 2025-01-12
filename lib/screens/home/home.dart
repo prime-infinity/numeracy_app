@@ -35,8 +35,7 @@ class _HomeState extends State<Home> {
                   child: Container(
                     height: 124.37,
                     decoration: BoxDecoration(
-                      color: AppColors.white,
-                      border: Border.all(color: AppColors.black),
+                      color: AppColors.primaryAccent,
                       borderRadius:
                           BorderRadius.circular(AppDimensions.cardRadius),
                     ),
