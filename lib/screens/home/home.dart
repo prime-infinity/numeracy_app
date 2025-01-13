@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:numeracy_app/screens/home/daily_streak.dart';
 import 'package:numeracy_app/screens/home/multi_selectable_tabs.dart';
 import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
@@ -28,6 +29,8 @@ class _HomeState extends State<Home> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const DailyStreak(),
+                const SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
                     context.go('/questions');
@@ -74,7 +77,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 22), // Add some spacing
+                const SizedBox(height: 20), // Add some spacing
                 //question options, tab view
                 const MultiSelectableTabs(),
               ],
