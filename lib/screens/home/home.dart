@@ -29,6 +29,25 @@ class _HomeState extends State<Home> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    StyledMediumText("Hi Prime", AppColors.black),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        StyledTitleMediumText(
+                            "Let's Begin Solving", AppColors.black),
+                        Image.asset(
+                          'assets/icons/profileimg.png',
+                          width: 38,
+                          height: 38,
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                const SizedBox(height: 20),
                 const DailyStreak(),
                 const SizedBox(height: 20),
                 GestureDetector(
