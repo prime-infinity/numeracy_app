@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:numeracy_app/shared/texts/styled_text.dart';
+//import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
 
 class DailyStreak extends StatelessWidget {
@@ -21,13 +21,13 @@ class DailyStreak extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
       decoration: BoxDecoration(
-        color: AppColors.primaryAccent,
+        color: AppColors.cardGrey,
         borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          StyledTitleSmallText("Daily Streak", AppColors.black),
+          //StyledTitleSmallText("Daily Streak", AppColors.black),
           const SizedBox(height: 14),
           SizedBox(
             height:
@@ -48,7 +48,7 @@ class DailyStreak extends StatelessWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: isCompleted[index]
-                              ? AppColors.primaryColor
+                              ? AppColors.primaryAccent
                               : AppColors.white,
                         ),
                       ),
@@ -80,7 +80,7 @@ class StreakLinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.primaryColor
+      ..color = AppColors.primaryAccent
       ..strokeWidth = 42
       ..strokeCap = StrokeCap.round;
 

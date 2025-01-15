@@ -82,7 +82,11 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
                 const SizedBox(height: 16),
                 Center(
                     child: StyledButton(
-                        text: "Begin", width: 251, onPressed: () {}))
+                  text: "Begin",
+                  width: 251,
+                  onPressed: () {},
+                  backgroundColor: AppColors.black,
+                ))
               ],
             ),
           ),

@@ -48,8 +48,12 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 const SizedBox(height: 20),
+                StyledTitleSmallText("Daily streak", AppColors.black),
+                const SizedBox(height: 10),
                 const DailyStreak(),
                 const SizedBox(height: 20),
+                StyledTitleSmallText("Random Questions", AppColors.black),
+                const SizedBox(height: 10),
                 GestureDetector(
                   onTap: () {
                     context.go('/questions');
@@ -57,7 +61,7 @@ class _HomeState extends State<Home> {
                   child: Container(
                     height: 124.37,
                     decoration: BoxDecoration(
-                      color: AppColors.primaryAccent,
+                      color: AppColors.cardGrey,
                       borderRadius:
                           BorderRadius.circular(AppDimensions.cardRadius),
                     ),
@@ -83,8 +87,6 @@ class _HomeState extends State<Home> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                StyledTitleSmallText(
-                                    "Random Questions", AppColors.black),
                                 StyledSmallText(
                                     "Randomize questions from different categories",
                                     AppColors.black)
@@ -98,6 +100,9 @@ class _HomeState extends State<Home> {
                 ),
                 const SizedBox(height: 20), // Add some spacing
                 //question options, tab view
+                StyledTitleSmallText(
+                    "Pick categories to practice", AppColors.black),
+                const SizedBox(height: 10),
                 const MultiSelectableTabs(),
               ],
             ),
