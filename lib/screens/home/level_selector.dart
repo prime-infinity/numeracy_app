@@ -13,7 +13,7 @@ class LevelSelector extends StatelessWidget {
     required this.selectedLevel,
     required this.onLevelSelected,
     this.circleSize = 19.0,
-    this.lineWidth = 72.0,
+    this.lineWidth = 65.0,
     this.spacing = 5.0,
   });
 
@@ -72,7 +72,7 @@ class LevelSelector extends StatelessWidget {
                   Container(
                     width: lineWidth,
                     height: 6,
-                    margin: EdgeInsets.symmetric(horizontal: spacing + 4),
+                    margin: EdgeInsets.symmetric(horizontal: spacing + 3),
                     decoration: BoxDecoration(
                       color: level < selectedLevel
                           ? AppColors.primaryColor
