@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:numeracy_app/screens/home/animated_tab_button.dart';
+import 'package:numeracy_app/screens/home/level_selector.dart';
 import 'package:numeracy_app/shared/buttons/styled_button.dart';
 import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
@@ -15,6 +16,7 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
   // Track selected tabs
   final List<bool> _selectedTabs = [false, false, false, false];
   final List<double> _animationProgress = [1.0, 0.0, 0.0, 0.0];
+  int _selectedLevel = 1;
 
   // Tab data
   final List<Map<String, String>> _tabs = [
@@ -61,23 +63,24 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 36.0, vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 30),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                StyledTitleMediumText("Difficulty Level", AppColors.black),
-                const SizedBox(height: 8),
-                StyledSmallText("Select a difficulty level", Colors.grey[600]!),
+                Center(
+                    child: StyledSmallText(
+                        "Select a difficulty level", AppColors.black)),
                 const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    //_buildDifficultyChip('1 - 10'),
-                    const SizedBox(width: 8),
-                    _buildDifficultyChip('10 - 100'),
-                    const SizedBox(width: 8),
-                    _buildDifficultyChip('100 - 1000'),
-                  ],
+                //difficulty slider
+                Center(
+                  child: LevelSelector(
+                      selectedLevel: _selectedLevel,
+                      onLevelSelected: (level) {
+                        setState(() {
+                          // Update your selected level
+                          _selectedLevel = level;
+                        });
+                      }),
                 ),
                 const SizedBox(height: 16),
                 Center(
@@ -136,17 +139,6 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildDifficultyChip(String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.black),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(label),
     );
   }
 }
