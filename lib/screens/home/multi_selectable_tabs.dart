@@ -69,7 +69,7 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
               children: [
                 Center(
                     child: StyledSmallText(
-                        "Select a difficulty level", AppColors.black)),
+                        "Select difficulty level", AppColors.black)),
                 const SizedBox(height: 16),
                 //difficulty slider
                 Center(
