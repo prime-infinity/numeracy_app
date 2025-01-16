@@ -78,6 +78,7 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
                       onLevelSelected: (level) {
                         setState(() {
                           // Update your selected level
+                          //print(level);
                           _selectedLevel = level;
                         });
                       }),

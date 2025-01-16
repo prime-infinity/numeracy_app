@@ -27,11 +27,10 @@ class DailyStreak extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //StyledTitleSmallText("Daily Streak", AppColors.black),
           const SizedBox(height: 14),
           SizedBox(
             height:
-                70, // Increased height to accommodate circle + text + padding
+                75, // Increased height to accommodate circle + text + padding
             child: CustomPaint(
               painter: StreakLinePainter(isCompleted: isCompleted),
               child: Row(
@@ -55,9 +54,10 @@ class DailyStreak extends StatelessWidget {
                       const SizedBox(height: 8), // Increased spacing
                       Text(
                         days[index],
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.black,
                         ),
                       ),
                     ],
@@ -86,7 +86,7 @@ class StreakLinePainter extends CustomPainter {
 
     const circleWidth = 40.0;
     final spacing = (size.width - (circleWidth * 7)) / 6;
-    const centerY = 20.0; // Half of circle height (40/2)
+    const centerY = 22.0; // Half of circle height (40/2)
 
     for (int i = 0; i < isCompleted.length - 1; i++) {
       if (isCompleted[i] && isCompleted[i + 1]) {

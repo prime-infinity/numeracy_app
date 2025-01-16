@@ -18,8 +18,8 @@ class LevelSelector extends StatelessWidget {
   final Map<int, LevelInfo> levelDescriptions = const {
     1: LevelInfo(range: "1-10", description: "even numbers"),
     2: LevelInfo(range: "1-40", description: "even numbers"),
-    3: LevelInfo(range: "1-50", description: "odd and numbers"),
-    4: LevelInfo(range: "1-100", description: "odd and numbers"),
+    3: LevelInfo(range: "1-50", description: "odd and even numbers"),
+    4: LevelInfo(range: "1-100", description: "odd and even numbers"),
   };
 
   const LevelSelector({
@@ -116,7 +116,7 @@ class LevelSelector extends StatelessWidget {
                 width: totalWidth,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryAccent.withOpacity(0.2),
+                  color: AppColors.primaryAccent,
                   borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(0),
                       topRight: const Radius.circular(0),
@@ -135,7 +135,8 @@ class LevelSelector extends StatelessWidget {
                     key: ValueKey(selectedLevel),
                     style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.black,
+                      color: AppColors.primaryColor,
+                      fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
                   ),

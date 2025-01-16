@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:numeracy_app/screens/home/daily_streak.dart';
 import 'package:numeracy_app/screens/home/multi_selectable_tabs.dart';
+import 'package:numeracy_app/shared/pills/styled_pill.dart';
 import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
 
@@ -48,11 +49,11 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                StyledTitleSmallText("Daily streak", AppColors.black),
+                const StyledPill(text: "Daily Streak"),
                 const SizedBox(height: 10),
                 const DailyStreak(),
-                const SizedBox(height: 20),
-                StyledTitleSmallText("Random Questions", AppColors.black),
+                const SizedBox(height: 40),
+                const StyledPill(text: "Quick Practice"),
                 const SizedBox(height: 10),
                 GestureDetector(
                   onTap: () {
@@ -88,7 +89,7 @@ class _HomeState extends State<Home> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 StyledSmallText(
-                                    "Randomize questions from different categories",
+                                    "Quicky practice random questions",
                                     AppColors.black)
                               ],
                             ),
@@ -98,10 +99,13 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20), // Add some spacing
-                //question options, tab view
-                StyledTitleSmallText(
-                    "Pick categories to practice", AppColors.black),
+                const SizedBox(height: 40), // Add some spacing
+                const StyledPill(text: "Custom Practice"),
+                const SizedBox(
+                  height: 5,
+                ),
+                StyledSmallText(
+                    "Select categories to practice", AppColors.black),
                 const SizedBox(height: 10),
                 const MultiSelectableTabs(),
               ],
