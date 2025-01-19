@@ -10,7 +10,7 @@ class QuestionNotifier extends _$QuestionNotifier {
   @override
   Map<String, dynamic> build() {
     return {
-      'timelimit': 10,
+      'timelimit': 60,
       'questions': generateRandomQuestions(),
       'answeredQuestions': <int, QuestionResponse>{},
     };
@@ -36,7 +36,7 @@ class QuestionNotifier extends _$QuestionNotifier {
   //replaces current questions with new ones
   void replaceQuestions(List<Question> questions) {
     state = {
-      'timelimit': 10,
+      'timelimit': 60,
       'questions': questions,
       'answeredQuestions': <int, QuestionResponse>{},
     };

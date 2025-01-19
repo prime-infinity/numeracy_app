@@ -112,9 +112,7 @@ class _QuestionState extends ConsumerState<Question> {
 
     // Check if the question has been answered
     if (!answeredQuestions.containsKey(currentQuestion.questionNumber)) {
-      return _index == index
-          ? AppColors.primaryColor
-          : Colors.grey.withOpacity(0.5);
+      return _index == index ? AppColors.primaryColor : AppColors.white;
     }
 
     return answeredQuestions[currentQuestion.questionNumber]!.isCorrect
@@ -186,7 +184,7 @@ class _QuestionState extends ConsumerState<Question> {
     final questions = state['questions'];
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       appBar: AppBar(
         title: const Text("questions"),
         centerTitle: true,
@@ -225,43 +223,51 @@ class _QuestionState extends ConsumerState<Question> {
             const SizedBox(
                 height: 10), // Reduced space between cards and indicators
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: List.generate(
-                      questions.length,
-                      (index) => Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: _getIndicatorColor(index),
+              padding: const EdgeInsets.symmetric(horizontal: 13),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                decoration: BoxDecoration(
+                    color: AppColors.cardGrey,
+                    borderRadius:
+                        BorderRadius.circular(AppDimensions.cardRadius)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: List.generate(
+                        questions.length,
+                        (index) => Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: _getIndicatorColor(index),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.access_time,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '$_timeLeft',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.access_time,
+                          size: 20,
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        const SizedBox(width: 4),
+                        Text(
+                          '$_timeLeft',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
             const Spacer(flex: 3), // Bottom spacing
