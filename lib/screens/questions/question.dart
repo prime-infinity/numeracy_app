@@ -226,7 +226,7 @@ class _QuestionState extends ConsumerState<Question> {
               padding: const EdgeInsets.symmetric(horizontal: 13),
               child: Container(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                 decoration: BoxDecoration(
                     color: AppColors.cardGrey,
                     borderRadius:
@@ -250,21 +250,28 @@ class _QuestionState extends ConsumerState<Question> {
                         ),
                       ),
                     ),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.access_time,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '$_timeLeft',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                          color: AppColors.white,
+                          borderRadius:
+                              BorderRadius.circular(AppDimensions.cardRadius)),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.access_time,
+                            size: 20,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 4),
+                          Text(
+                            '$_timeLeft',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

@@ -10,16 +10,44 @@ List<Question> generateRandomQuestions() {
 
   for (int i = 1; i <= 10; i++) {
     final operation = Operation.values[random.nextInt(Operation.values.length)];
-    final operand1 = random.nextInt(50) + 1;
-    final operand2 = random.nextInt(50) + 1;
-    final result = operation.calculate(operand1, operand2);
+    int operand1;
+    int operand2;
+    int result;
 
-    // Generate 4 options, one of which is the correct answer
+    // Special handling for division to ensure clean division
+    if (operation == Operation.division) {
+      // First generate the result (1-12 for reasonable difficulty)
+      result = random.nextInt(12) + 1;
+      // Then generate the second operand (1-10 for reasonable difficulty)
+      operand2 = random.nextInt(10) + 1;
+      // Calculate first operand by multiplying to ensure clean division
+      operand1 = result * operand2;
+    } else {
+      operand1 = random.nextInt(50) + 1;
+      operand2 = random.nextInt(50) + 1;
+      result = operation.calculate(operand1, operand2);
+    }
+
+    // Generate unique wrong answers
+    final Set<int> wrongAnswers = {};
+    while (wrongAnswers.length < 3) {
+      // Randomly decide whether to add or subtract
+      final bool shouldAdd = random.nextBool();
+      final offset = random.nextInt(6) + 1;
+      final wrongAnswer = shouldAdd ? result + offset : result - offset;
+
+      // Only add if it's different from the correct answer and not already in the set
+      if (wrongAnswer != result) {
+        wrongAnswers.add(wrongAnswer);
+      }
+    }
+
+    // Create options list with the correct answer and wrong answers
     final options = [
       {"a": result},
-      {"b": result + random.nextInt(6) + 1},
-      {"c": result - random.nextInt(6) + 1},
-      {"d": result + random.nextInt(6) + 1},
+      {"b": wrongAnswers.elementAt(0)},
+      {"c": wrongAnswers.elementAt(1)},
+      {"d": wrongAnswers.elementAt(2)},
     ]..shuffle();
 
     questions.add(Question(
