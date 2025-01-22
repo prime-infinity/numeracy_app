@@ -18,12 +18,14 @@ class Question extends ConsumerStatefulWidget {
 
 class _QuestionState extends ConsumerState<Question> {
   final _pageController = PageController(
-    viewportFraction: 0.95,
+    viewportFraction: 0.9,
   );
 
   double _currentPage = 0;
   int _index = 0;
   bool _hasStarted = false; // New flag to track if timer should start
+  bool _wasEverStarted =
+      false; //new variable to track if quiz was ever completed
 
   // Timer variables
   int _timeLeft = 0;
@@ -81,7 +83,10 @@ class _QuestionState extends ConsumerState<Question> {
   void _startTimer() {
     if (_timer != null || _hasStarted) return; // Don't start if already running
 
-    _hasStarted = true;
+    setState(() {
+      _hasStarted = true;
+      _wasEverStarted = true;
+    });
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -200,7 +205,9 @@ class _QuestionState extends ConsumerState<Question> {
                 controller: _pageController,
                 scrollDirection: Axis.horizontal,
                 itemCount: questions.length,
-                physics: const BouncingScrollPhysics(),
+                physics: (_hasStarted || _wasEverStarted)
+                    ? const BouncingScrollPhysics()
+                    : const NeverScrollableScrollPhysics(),
                 onPageChanged: (index) {
                   setState(() {
                     _index = index;
