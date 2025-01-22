@@ -127,24 +127,32 @@ class _QuestionState extends ConsumerState<Question> {
 
   // Handle answer selection
   void _handleAnswerSelected() {
-    final questions = ref.watch(questionNotifierProvider)['questions'];
+    final state = ref.watch(questionNotifierProvider);
+    final questions = state['questions'];
+    final answeredQuestions =
+        state['answeredQuestions'] as Map<int, QuestionResponse>;
 
     // Start timer on first attempt if not already started
     if (!_hasStarted) {
       _startTimer();
     }
 
+    // Check if all questions have been answered
+    bool allQuestionsAnswered = questions.every(
+        (question) => answeredQuestions.containsKey(question.questionNumber));
+
     // Wait a moment to show the answer feedback before scrolling
     Future.delayed(const Duration(milliseconds: 150), () {
-      // Check if this isn't the last question
       if (_index < questions.length - 1) {
         _pageController.animateToPage(
           _index + 1,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
-      } else {
-        // Handle completion of all questions
+      }
+
+      // Only show completion dialog if all questions are answered
+      if (allQuestionsAnswered) {
         _showCompletionDialog();
       }
     });
