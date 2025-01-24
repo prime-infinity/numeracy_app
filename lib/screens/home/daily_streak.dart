@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:numeracy_app/shared/texts/styled_text.dart';
 //import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
 
@@ -27,6 +28,7 @@ class DailyStreak extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          StyledMediumText("Daily Streak", AppColors.black, true),
           const SizedBox(height: 14),
           SizedBox(
             height:

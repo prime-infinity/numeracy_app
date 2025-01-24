@@ -17,16 +17,19 @@ class StyledSmallText extends StatelessWidget {
 }
 
 class StyledMediumText extends StatelessWidget {
-  const StyledMediumText(this.text, this.color, {super.key});
+  const StyledMediumText(this.text, this.color, this.isBold, {super.key});
   final String text;
   final Color color;
+  final bool isBold;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
       style: GoogleFonts.poppins(
-          textStyle: Theme.of(context).textTheme.bodyMedium, color: color),
+          textStyle: Theme.of(context).textTheme.bodyMedium,
+          color: color,
+          fontWeight: isBold ? FontWeight.bold : null),
     );
   }
 }

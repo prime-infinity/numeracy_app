@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:numeracy_app/screens/home/animated_tab_button.dart';
-import 'package:numeracy_app/screens/home/level_selector.dart';
 import 'package:numeracy_app/shared/buttons/styled_button.dart';
 import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
@@ -16,7 +15,6 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
   // Track selected tabs
   final List<bool> _selectedTabs = [false, false, false, false];
   final List<double> _animationProgress = [1.0, 0.0, 0.0, 0.0];
-  int _selectedLevel = 1;
 
   // Tab data
   final List<Map<String, String>> _tabs = [
@@ -33,7 +31,7 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
         Stack(children: [
           // Tab row
           Padding(
-            padding: const EdgeInsets.only(bottom: 13.0),
+            padding: const EdgeInsets.only(bottom: 23.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: List.generate(
@@ -50,7 +48,7 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
           duration: const Duration(milliseconds: 300), // Animation duration
           curve: Curves.easeInOut,
           decoration: BoxDecoration(
-            color: AppColors.cardGrey, // Background color of the container
+            color: AppColors.white, // Background color of the container
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(
                   AppDimensions.cardRadius), // Adjust the radius as needed
@@ -63,31 +61,30 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 30),
+            padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 30),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                    child: StyledSmallText(
-                        "Select difficulty level", AppColors.black)),
-                const SizedBox(height: 16),
+                StyledSmallText("2: Select difficulty level", AppColors.black),
                 //difficulty slider
-                Center(
-                  child: LevelSelector(
-                      selectedLevel: _selectedLevel,
-                      onLevelSelected: (level) {
-                        setState(() {
-                          // Update your selected level
-                          //print(level);
-                          _selectedLevel = level;
-                        });
-                      }),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    OutlinedButton(
+                        onPressed: () {},
+                        child: StyledSmallText("1-10", AppColors.black)),
+                    OutlinedButton(
+                        onPressed: () {},
+                        child: StyledSmallText("1-100", AppColors.black)),
+                    OutlinedButton(
+                        onPressed: () {},
+                        child: StyledSmallText("1-1000", AppColors.black))
+                  ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 Center(
                     child: StyledButton(
                   text: "Begin",
-                  width: 251,
                   onPressed: () {},
                   backgroundColor: AppColors.black,
                 ))

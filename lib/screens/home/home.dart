@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:numeracy_app/screens/home/daily_streak.dart';
 import 'package:numeracy_app/screens/home/multi_selectable_tabs.dart';
-import 'package:numeracy_app/shared/pills/styled_pill.dart';
 import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
 
@@ -33,7 +32,7 @@ class _HomeState extends State<Home> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    StyledMediumText("Hi Prime", AppColors.black),
+                    StyledMediumText("Hi Prime", AppColors.black, false),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -49,12 +48,9 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                const StyledPill(text: "Daily Streak"),
-                const SizedBox(height: 10),
+
                 const DailyStreak(),
-                const SizedBox(height: 40),
-                const StyledPill(text: "Quick Practice"),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
                     context.go('/questions');
@@ -88,6 +84,8 @@ class _HomeState extends State<Home> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                StyledMediumText(
+                                    "Quick Practice", AppColors.black, true),
                                 StyledSmallText(
                                     "Quicky practice random questions",
                                     AppColors.black)
@@ -99,15 +97,29 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 40), // Add some spacing
-                const StyledPill(text: "Custom Practice"),
-                const SizedBox(
-                  height: 5,
-                ),
-                StyledSmallText(
-                    "Select categories to practice", AppColors.black),
-                const SizedBox(height: 10),
-                const MultiSelectableTabs(),
+                const SizedBox(height: 20), // Add some spacing
+
+                Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 22, vertical: 22),
+                    decoration: BoxDecoration(
+                        color: AppColors.cardGrey,
+                        borderRadius:
+                            BorderRadius.circular(AppDimensions.cardRadius)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        StyledMediumText(
+                            "Custom Practice", AppColors.black, true),
+                        StyledSmallText("Boost your skills with a custom quiz",
+                            AppColors.black),
+                        const SizedBox(height: 30),
+                        StyledSmallText("1: Select Category", AppColors.black),
+                        const SizedBox(height: 5),
+                        const MultiSelectableTabs(),
+                      ],
+                    )),
+                const SizedBox(height: 20)
               ],
             ),
           ),

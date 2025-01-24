@@ -18,7 +18,7 @@ class Question extends ConsumerStatefulWidget {
 
 class _QuestionState extends ConsumerState<Question> {
   final _pageController = PageController(
-    viewportFraction: 0.9,
+    viewportFraction: 0.95,
   );
 
   double _currentPage = 0;

@@ -67,19 +67,19 @@ class _AnimatedTabButtonState extends State<AnimatedTabButton>
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color:
-              widget.isSelected ? AppColors.cardGrey : AppColors.primaryAccent,
+          color: widget.isSelected ? AppColors.white : AppColors.primaryAccent,
           borderRadius: BorderRadius.vertical(
             top: const Radius.circular(22),
             bottom: Radius.circular(widget.isSelected ? 0 : 22),
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(0),
           child: SizedBox(
-            width: 61.5,
-            height: 61.5,
+            width: 53.77,
+            height: 53.77,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(18),
               child: Stack(
@@ -93,7 +93,7 @@ class _AnimatedTabButtonState extends State<AnimatedTabButton>
                     animation: _animation,
                     builder: (context, child) {
                       return CustomPaint(
-                        size: const Size(61.5, 61.5),
+                        size: const Size(53.77, 53.77),
                         painter: RadialSpreadPainter(
                           animation: _animation.value,
                           primaryColor: AppColors.primaryColor,
@@ -167,10 +167,10 @@ class AnimatedExtensionContainer extends StatelessWidget {
         isSelected ? ((animationProgress - 0.7) / 0.3).clamp(0.0, 1.0) : 0.0;
 
     return CustomPaint(
-      size: const Size(81.0, 17.0),
+      size: const Size(73.77, 25),
       painter: ExtensionPainter(
         progress: fillProgress,
-        color: AppColors.cardGrey,
+        color: AppColors.white,
       ),
     );
   }
