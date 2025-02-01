@@ -79,31 +79,46 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(
                             _selectedRange == 'a'
-                                ? AppColors.cardGrey
+                                ? AppColors.black
                                 : Colors.transparent,
                           ),
                         ),
-                        child: StyledSmallText("1-10", AppColors.black)),
+                        child: StyledSmallText(
+                          "1-10",
+                          _selectedRange == 'a'
+                              ? Colors.white
+                              : AppColors.black,
+                        )),
                     OutlinedButton(
                         onPressed: () => setState(() => _selectedRange = 'b'),
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(
                             _selectedRange == 'b'
-                                ? AppColors.cardGrey
+                                ? AppColors.black
                                 : Colors.transparent,
                           ),
                         ),
-                        child: StyledSmallText("1-100", AppColors.black)),
+                        child: StyledSmallText(
+                          "1-100",
+                          _selectedRange == 'b'
+                              ? Colors.white
+                              : AppColors.black,
+                        )),
                     OutlinedButton(
                         onPressed: () => setState(() => _selectedRange = 'c'),
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(
                             _selectedRange == 'c'
-                                ? AppColors.cardGrey
+                                ? AppColors.black
                                 : Colors.transparent,
                           ),
                         ),
-                        child: StyledSmallText("1-1000", AppColors.black))
+                        child: StyledSmallText(
+                          "1-1000",
+                          _selectedRange == 'c'
+                              ? Colors.white
+                              : AppColors.black,
+                        ))
                   ],
                 ),
                 const SizedBox(height: 20),
