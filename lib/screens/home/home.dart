@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:numeracy_app/providers/question_provider.dart';
 import 'package:numeracy_app/screens/home/daily_streak.dart';
 import 'package:numeracy_app/screens/home/multi_selectable_tabs.dart';
 import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
 
-class Home extends StatefulWidget {
+class Home extends ConsumerStatefulWidget {
   const Home({super.key});
 
   @override
-  State<Home> createState() => _HomeState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends ConsumerState<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,7 +87,8 @@ class _HomeState extends State<Home> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 StyledMediumText(
-                                    "Quick Practice", AppColors.black, isBold: true),
+                                    "Quick Practice", AppColors.black,
+                                    isBold: true),
                                 StyledSmallText(
                                     "Quicky practice random questions",
                                     AppColors.black)
@@ -109,14 +112,26 @@ class _HomeState extends State<Home> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        StyledMediumText(
-                            "Custom Practice", AppColors.black, isBold: true),
+                        StyledMediumText("Custom Practice", AppColors.black,
+                            isBold: true),
                         StyledSmallText("Boost your skills with a custom quiz",
                             AppColors.black),
                         const SizedBox(height: 30),
                         StyledSmallText("1: Select Category", AppColors.black),
                         const SizedBox(height: 5),
-                        const MultiSelectableTabs(),
+                        MultiSelectableTabs(
+                          onBegin: (operations, range) {
+                            // Set the quiz configuration
+                            ref
+                                .read(questionNotifierProvider.notifier)
+                                .setQuizConfig(
+                                  operations: operations,
+                                  range: range,
+                                );
+                            // Navigate to questions page
+                            context.go('/questions');
+                          },
+                        ),
                       ],
                     )),
                 const SizedBox(height: 20)

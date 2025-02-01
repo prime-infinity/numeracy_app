@@ -191,8 +191,6 @@ class _QuestionState extends ConsumerState<Question> {
   @override
   Widget build(BuildContext context) {
     // Watch the questions from the provider
-    //final questions = ref.watch(questionNotifierProvider);
-    //print(questions['questions']);
     final state = ref.watch(questionNotifierProvider);
     final questions = state['questions'];
 

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:numeracy_app/models/operation.dart';
 import 'package:numeracy_app/screens/home/animated_tab_button.dart';
 import 'package:numeracy_app/shared/buttons/styled_button.dart';
 import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
 
 class MultiSelectableTabs extends StatefulWidget {
-  const MultiSelectableTabs({super.key});
+  final Function(List<Operation>, String) onBegin;
+
+  const MultiSelectableTabs({super.key, required this.onBegin});
 
   @override
   MultiSelectableTabsState createState() => MultiSelectableTabsState();
@@ -15,13 +18,14 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
   // Track selected tabs
   final List<bool> _selectedTabs = [false, false, false, false];
   final List<double> _animationProgress = [1.0, 0.0, 0.0, 0.0];
+  String _selectedRange = 'b'; // Default to 1-100
 
-  // Tab data
-  final List<Map<String, String>> _tabs = [
-    {'icon': '+'},
-    {'icon': '−'},
-    {'icon': '×'},
-    {'icon': '/'},
+  // Tab data with corresponding operations
+  final List<Map<String, dynamic>> _tabs = [
+    {'icon': '+', 'operation': Operation.addition},
+    {'icon': '−', 'operation': Operation.subtraction},
+    {'icon': '×', 'operation': Operation.multiplication},
+    {'icon': '/', 'operation': Operation.division},
   ];
 
   @override
@@ -71,13 +75,34 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () => setState(() => _selectedRange = 'a'),
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all(
+                            _selectedRange == 'a'
+                                ? AppColors.cardGrey
+                                : Colors.transparent,
+                          ),
+                        ),
                         child: StyledSmallText("1-10", AppColors.black)),
                     OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () => setState(() => _selectedRange = 'b'),
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all(
+                            _selectedRange == 'b'
+                                ? AppColors.cardGrey
+                                : Colors.transparent,
+                          ),
+                        ),
                         child: StyledSmallText("1-100", AppColors.black)),
                     OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () => setState(() => _selectedRange = 'c'),
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all(
+                            _selectedRange == 'c'
+                                ? AppColors.cardGrey
+                                : Colors.transparent,
+                          ),
+                        ),
                         child: StyledSmallText("1-1000", AppColors.black))
                   ],
                 ),
@@ -85,8 +110,9 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
                 Center(
                     child: StyledButton(
                   text: "Begin",
-                  onPressed: () {},
-                  backgroundColor: AppColors.black,
+                  onPressed: _handleBegin,
+                  backgroundColor:
+                      _canBegin() ? AppColors.black : AppColors.cardGrey,
                 ))
               ],
             ),
@@ -94,6 +120,26 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
         ),
       ],
     );
+  }
+
+  bool _canBegin() {
+    // Check if at least one operation is selected
+    return _selectedTabs.contains(true);
+  }
+
+  void _handleBegin() {
+    if (!_canBegin()) return;
+
+    // Get selected operations
+    final selectedOperations = <Operation>[];
+    for (int i = 0; i < _selectedTabs.length; i++) {
+      if (_selectedTabs[i]) {
+        selectedOperations.add(_tabs[i]['operation']);
+      }
+    }
+
+    // Call the callback with selected operations and range
+    widget.onBegin(selectedOperations, _selectedRange);
   }
 
   void _handleTabPress(int index) {

@@ -1,3 +1,4 @@
+import 'package:numeracy_app/models/operation.dart';
 import 'package:numeracy_app/models/question.dart';
 import 'package:numeracy_app/models/question_response.dart';
 import 'package:numeracy_app/services/question_generator.dart';
@@ -13,6 +14,27 @@ class QuestionNotifier extends _$QuestionNotifier {
       'timelimit': 30,
       'questions': generateQuestions(),
       'answeredQuestions': <int, QuestionResponse>{},
+      'currentConfig': {
+        'operations': null,
+        'range': 'b',
+      },
+    };
+  }
+
+  void setQuizConfig({List<Operation>? operations, String? range}) {
+    final newQuestions = generateQuestions(
+      operations: operations,
+      range: range ?? 'b',
+    );
+
+    state = {
+      ...state,
+      'questions': newQuestions,
+      'answeredQuestions': <int, QuestionResponse>{},
+      'currentConfig': {
+        'operations': operations,
+        'range': range ?? 'b',
+      },
     };
   }
 
@@ -34,11 +56,19 @@ class QuestionNotifier extends _$QuestionNotifier {
   }
 
   //replaces current questions with new ones
-  void replaceQuestions(List<Question> questions) {
+  void replaceQuestions([List<Question>? questions]) {
+    final currentConfig = state['currentConfig'];
+    final newQuestions = questions ??
+        generateQuestions(
+          operations: currentConfig['operations'],
+          range: currentConfig['range'],
+        );
+
     state = {
       'timelimit': 30,
-      'questions': questions,
+      'questions': newQuestions,
       'answeredQuestions': <int, QuestionResponse>{},
+      'currentConfig': currentConfig,
     };
   }
 
