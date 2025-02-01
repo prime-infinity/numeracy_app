@@ -32,7 +32,7 @@ class _HomeState extends State<Home> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    StyledMediumText("Hi Prime", AppColors.black, false),
+                    StyledMediumText("Hi Prime", AppColors.black),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -85,7 +85,7 @@ class _HomeState extends State<Home> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 StyledMediumText(
-                                    "Quick Practice", AppColors.black, true),
+                                    "Quick Practice", AppColors.black, isBold: true),
                                 StyledSmallText(
                                     "Quicky practice random questions",
                                     AppColors.black)
@@ -110,7 +110,7 @@ class _HomeState extends State<Home> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         StyledMediumText(
-                            "Custom Practice", AppColors.black, true),
+                            "Custom Practice", AppColors.black, isBold: true),
                         StyledSmallText("Boost your skills with a custom quiz",
                             AppColors.black),
                         const SizedBox(height: 30),

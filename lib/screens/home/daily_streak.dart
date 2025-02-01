@@ -28,7 +28,7 @@ class DailyStreak extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          StyledMediumText("Daily Streak", AppColors.black, true),
+          StyledMediumText("Daily Streak", AppColors.black, isBold: true),
           const SizedBox(height: 14),
           SizedBox(
             height:

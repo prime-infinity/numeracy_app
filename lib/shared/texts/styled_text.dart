@@ -17,7 +17,8 @@ class StyledSmallText extends StatelessWidget {
 }
 
 class StyledMediumText extends StatelessWidget {
-  const StyledMediumText(this.text, this.color, this.isBold, {super.key});
+  const StyledMediumText(this.text, this.color,
+      {this.isBold = false, super.key});
   final String text;
   final Color color;
   final bool isBold;
