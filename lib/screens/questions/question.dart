@@ -56,7 +56,7 @@ class _QuestionState extends ConsumerState<Question> {
     // Generate new questions using the provider
     ref
         .read(questionNotifierProvider.notifier)
-        .replaceQuestions(generateRandomQuestions());
+        .replaceQuestions(generateQuestions());
     // Reset all state variables
     setState(() {
       _hasStarted = false;
