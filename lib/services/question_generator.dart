@@ -3,11 +3,10 @@ import 'dart:math';
 import 'package:numeracy_app/models/operation.dart';
 import 'package:numeracy_app/models/question.dart';
 
-///Generates a list of math questions based on specific parameters
+/// Generates a list of math questions based on specific parameters.
 ///
-///[operations] - Optional list of operations to use. If null, use all operations
-///[range] - Optional difficulty range 'a'(1-10), 'b'(1-100), 'c'(1-1000), default is 'b'
-
+/// [operations] - Optional list of operations to use. If null, use all operations.
+/// [range] - Optional difficulty range 'a'(1-10), 'b'(1-100), 'c'(1-1000), default is 'b'.
 List<Question> generateQuestions({
   List<Operation>? operations,
   String range = 'b',
@@ -15,7 +14,7 @@ List<Question> generateQuestions({
   final Random random = Random();
   final List<Question> questions = [];
 
-  //range map to determine number range based on difficulty
+  // Range map to determine number range based on difficulty.
   final Map<String, (int, int)> ranges = {
     'a': (1, 10),
     'b': (1, 100),
@@ -23,7 +22,7 @@ List<Question> generateQuestions({
   };
   final (minRange, maxRange) = ranges[range] ?? (1, 100);
 
-  // Use provided operations or all operations
+  // Use provided operations or all operations.
   final availableOperations = operations ?? Operation.values;
 
   for (int i = 1; i <= 10; i++) {
@@ -33,11 +32,9 @@ List<Question> generateQuestions({
     int operand2;
     int result;
 
-    // Special handling for division to ensure clean division
+    // Special handling for division to ensure clean division.
     if (operation == Operation.division) {
-      // Adjust division logic based on range
-      final maxResult =
-          (maxRange ~/ 10).clamp(1, 12); // Ensure reasonable difficulty
+      final maxResult = (maxRange ~/ 10).clamp(1, 12);
       result = random.nextInt(maxResult) + 1;
       operand2 = random.nextInt(maxResult) + 1;
       operand1 = result * operand2;
@@ -47,22 +44,22 @@ List<Question> generateQuestions({
       result = operation.calculate(operand1, operand2);
     }
 
-    // Generate unique wrong answers
+    // Generate unique wrong answers.
+    // Instead of using a fixed offset based on maxRange, we expand the offset until we have 3 wrong answers.
     final Set<int> wrongAnswers = {};
+    int offset = 1;
     while (wrongAnswers.length < 3) {
-      final bool shouldAdd = random.nextBool();
-      // Scale the offset based on the range
-      final maxOffset = (maxRange * 0.1).round().clamp(1, 10);
-      final offset = random.nextInt(maxOffset) + 1;
-      final wrongAnswer = shouldAdd ? result + offset : result - offset;
+      // Try adding a wrong answer above the correct answer.
+      wrongAnswers.add(result + offset);
 
-      // Only add if it's different from the correct answer and not already in the set
-      if (wrongAnswer != result && !wrongAnswers.contains(wrongAnswer)) {
-        wrongAnswers.add(wrongAnswer);
+      // Try adding a wrong answer below the correct answer, ensuring it's positive.
+      if (result - offset > 0) {
+        wrongAnswers.add(result - offset);
       }
+      offset++;
     }
 
-    // Create options list with the correct answer and wrong answers
+    // Pick the first three wrong answers (they are now guaranteed to be unique).
     final options = [
       {"a": result},
       {"b": wrongAnswers.elementAt(0)},
