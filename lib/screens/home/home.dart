@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:numeracy_app/providers/question_provider.dart';
 import 'package:numeracy_app/screens/home/daily_streak.dart';
 import 'package:numeracy_app/screens/home/multi_selectable_tabs.dart';
 import 'package:numeracy_app/shared/texts/styled_text.dart';
@@ -119,19 +118,7 @@ class _HomeState extends ConsumerState<Home> {
                         const SizedBox(height: 30),
                         StyledSmallText("1: Select Category", AppColors.black),
                         const SizedBox(height: 5),
-                        MultiSelectableTabs(
-                          onBegin: (operations, range) {
-                            // Set the quiz configuration
-                            ref
-                                .read(questionNotifierProvider.notifier)
-                                .setQuizConfig(
-                                  operations: operations,
-                                  range: range,
-                                );
-                            // Navigate to questions page
-                            context.go('/questions');
-                          },
-                        ),
+                        const MultiSelectableTabs(),
                       ],
                     )),
                 const SizedBox(height: 20)

@@ -1,4 +1,3 @@
-import 'package:numeracy_app/models/operation.dart';
 import 'package:numeracy_app/models/question.dart';
 import 'package:numeracy_app/models/question_response.dart';
 import 'package:numeracy_app/services/question_generator.dart';
@@ -17,23 +16,6 @@ class QuestionNotifier extends _$QuestionNotifier {
       'currentConfig': {
         'operations': null,
         'range': 'b',
-      },
-    };
-  }
-
-  void setQuizConfig({List<Operation>? operations, String? range}) {
-    final newQuestions = generateQuestions(
-      operations: operations,
-      range: range ?? 'b',
-    );
-
-    state = {
-      ...state,
-      'questions': newQuestions,
-      'answeredQuestions': <int, QuestionResponse>{},
-      'currentConfig': {
-        'operations': operations,
-        'range': range ?? 'b',
       },
     };
   }

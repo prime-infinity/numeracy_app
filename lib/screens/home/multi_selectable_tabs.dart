@@ -6,9 +6,7 @@ import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
 
 class MultiSelectableTabs extends StatefulWidget {
-  final Function(List<Operation>, String) onBegin;
-
-  const MultiSelectableTabs({super.key, required this.onBegin});
+  const MultiSelectableTabs({super.key});
 
   @override
   MultiSelectableTabsState createState() => MultiSelectableTabsState();
@@ -144,17 +142,6 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
 
   void _handleBegin() {
     if (!_canBegin()) return;
-
-    // Get selected operations
-    final selectedOperations = <Operation>[];
-    for (int i = 0; i < _selectedTabs.length; i++) {
-      if (_selectedTabs[i]) {
-        selectedOperations.add(_tabs[i]['operation']);
-      }
-    }
-
-    // Call the callback with selected operations and range
-    widget.onBegin(selectedOperations, _selectedRange);
   }
 
   void _handleTabPress(int index) {
