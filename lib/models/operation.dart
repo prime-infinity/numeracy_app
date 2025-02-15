@@ -31,3 +31,24 @@ enum Operation {
     }
   }
 }
+
+extension OperationExtension on Operation {
+  /// Returns a clean string (e.g., "addition").
+  String get name => toString().split('.').last;
+
+  /// Converts a string back to an Operation.
+  static Operation fromString(String value) {
+    switch (value) {
+      case 'addition':
+        return Operation.addition;
+      case 'subtraction':
+        return Operation.subtraction;
+      case 'multiplication':
+        return Operation.multiplication;
+      case 'division':
+        return Operation.division;
+      default:
+        throw Exception('Unknown operation: $value');
+    }
+  }
+}

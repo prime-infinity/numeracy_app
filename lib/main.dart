@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:numeracy_app/models/operation.dart';
 import 'package:numeracy_app/screens/home/home.dart';
 import 'package:numeracy_app/screens/questions/question.dart';
 import 'package:numeracy_app/shared/buttons/styled_button.dart';
@@ -23,7 +24,24 @@ class MyApp extends StatelessWidget {
       GoRoute(path: '/', builder: (context, state) => const Home(), routes: [
         GoRoute(
           path: 'questions',
-          builder: (context, state) => const Question(),
+          builder: (context, state) {
+            final range = state.uri.queryParameters['range'] ?? 'b';
+            final operationsParam = state.uri.queryParameters['operations'];
+
+            List<Operation> operations;
+            if (operationsParam != null && operationsParam.isNotEmpty) {
+              // The operations are expected as a comma-separated list (e.g., "addition,subtraction")
+              operations = operationsParam
+                  .split(',')
+                  .map((op) => OperationExtension.fromString(op))
+                  .toList();
+            } else {
+              // If no operations are provided, use all available operations.
+              operations = Operation.values;
+            }
+
+            return Question(range: range, operations: operations);
+          },
         ),
       ]),
       // You can add more routes here later

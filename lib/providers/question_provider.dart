@@ -13,10 +13,6 @@ class QuestionNotifier extends _$QuestionNotifier {
       'timelimit': 30,
       'questions': generateQuestions(),
       'answeredQuestions': <int, QuestionResponse>{},
-      'currentConfig': {
-        'operations': null,
-        'range': 'b',
-      },
     };
   }
 
@@ -39,18 +35,12 @@ class QuestionNotifier extends _$QuestionNotifier {
 
   //replaces current questions with new ones
   void replaceQuestions([List<Question>? questions]) {
-    final currentConfig = state['currentConfig'];
-    final newQuestions = questions ??
-        generateQuestions(
-          operations: currentConfig['operations'],
-          range: currentConfig['range'],
-        );
+    final newQuestions = questions ?? generateQuestions();
 
     state = {
       'timelimit': 30,
       'questions': newQuestions,
       'answeredQuestions': <int, QuestionResponse>{},
-      'currentConfig': currentConfig,
     };
   }
 

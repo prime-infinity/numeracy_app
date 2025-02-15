@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:numeracy_app/models/operation.dart';
 import 'package:numeracy_app/models/question_response.dart';
 import 'package:numeracy_app/providers/question_provider.dart';
 import 'package:numeracy_app/screens/questions/question_card.dart';
@@ -10,7 +11,11 @@ import 'package:numeracy_app/shared/modals/completion_modal.dart';
 import 'package:numeracy_app/theme.dart';
 
 class Question extends ConsumerStatefulWidget {
-  const Question({super.key});
+  final String range;
+  final List<Operation> operations;
+
+  const Question(
+      {super.key, this.range = 'b', this.operations = Operation.values});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _QuestionState();
@@ -39,7 +44,12 @@ class _QuestionState extends ConsumerState<Question> {
         _currentPage = _pageController.page ?? 0;
       });
     });
-    // Initialize timeLeft but don't start timer yet
+    // Delay provider modification until after the first frame.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(questionNotifierProvider.notifier).replaceQuestions(
+          generateQuestions(
+              operations: widget.operations, range: widget.range));
+    });
     _initializeTimer();
   }
 
@@ -54,9 +64,8 @@ class _QuestionState extends ConsumerState<Question> {
     _timer = null; // Add this line to reset the timer instance
 
     // Generate new questions using the provider
-    ref
-        .read(questionNotifierProvider.notifier)
-        .replaceQuestions(generateQuestions());
+    ref.read(questionNotifierProvider.notifier).replaceQuestions(
+        generateQuestions(range: widget.range, operations: widget.operations));
     // Reset all state variables
     setState(() {
       _hasStarted = false;

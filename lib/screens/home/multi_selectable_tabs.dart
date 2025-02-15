@@ -4,6 +4,7 @@ import 'package:numeracy_app/screens/home/animated_tab_button.dart';
 import 'package:numeracy_app/shared/buttons/styled_button.dart';
 import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
+import 'package:go_router/go_router.dart';
 
 class MultiSelectableTabs extends StatefulWidget {
   const MultiSelectableTabs({super.key});
@@ -142,6 +143,20 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
 
   void _handleBegin() {
     if (!_canBegin()) return;
+
+    // Build a list of selected operation names.
+    final selectedOps = <String>[];
+    for (int i = 0; i < _selectedTabs.length; i++) {
+      if (_selectedTabs[i]) {
+        final operation = _tabs[i]['operation'] as Operation;
+        // Use the extension to get a clean string (e.g., "addition")
+        selectedOps.add(operation.name);
+      }
+    }
+    final operationsQuery = selectedOps.join(',');
+
+    // Navigate to the questions route with query parameters for range and operations.
+    context.go('/questions?range=$_selectedRange&operations=$operationsQuery');
   }
 
   void _handleTabPress(int index) {
