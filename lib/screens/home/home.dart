@@ -59,7 +59,7 @@ class _HomeState extends ConsumerState<Home> {
                   child: Container(
                     height: 124.37,
                     decoration: BoxDecoration(
-                      color: AppColors.cardGrey,
+                      color: AppColors.primaryAccent,
                       borderRadius:
                           BorderRadius.circular(AppDimensions.cardRadius),
                     ),
@@ -71,7 +71,7 @@ class _HomeState extends ConsumerState<Home> {
                             width: 70,
                             height: 70,
                             decoration: BoxDecoration(
-                                color: AppColors.primaryColor,
+                                color: AppColors.black,
                                 borderRadius: BorderRadius.circular(16)),
                             child: Icon(
                               Icons.shuffle,
