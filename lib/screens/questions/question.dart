@@ -28,9 +28,10 @@ class _QuestionState extends ConsumerState<Question> {
 
   double _currentPage = 0;
   int _index = 0;
-  bool _hasStarted = false; // New flag to track if timer should start
-  bool _wasEverStarted =
-      false; //new variable to track if quiz was ever completed
+  bool _hasStarted = false; // Flag to track if timer should start
+  bool _wasEverStarted = false; // Track if quiz was ever completed
+  bool _quizEnded = false; // Track if the quiz has ended
+  bool _modalVisible = false; // Track if the completion modal is visible
 
   // Timer variables
   int _timeLeft = 0;
@@ -61,16 +62,20 @@ class _QuestionState extends ConsumerState<Question> {
   void _resetQuiz() {
     // Cancel existing timer
     _timer?.cancel();
-    _timer = null; // Add this line to reset the timer instance
+    _timer = null;
 
     // Generate new questions using the provider
     ref.read(questionNotifierProvider.notifier).replaceQuestions(
         generateQuestions(range: widget.range, operations: widget.operations));
+
     // Reset all state variables
     setState(() {
       _hasStarted = false;
       _currentPage = 0;
       _index = 0;
+      _quizEnded = false;
+      _modalVisible = false;
+      _wasEverStarted = false;
       _initializeTimer();
     });
 
@@ -90,7 +95,8 @@ class _QuestionState extends ConsumerState<Question> {
   }
 
   void _startTimer() {
-    if (_timer != null || _hasStarted) return; // Don't start if already running
+    if (_timer != null || _hasStarted || _quizEnded)
+      return; // Don't start if already running or ended
 
     setState(() {
       _hasStarted = true;
@@ -98,6 +104,11 @@ class _QuestionState extends ConsumerState<Question> {
     });
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_quizEnded) {
+        timer.cancel();
+        return;
+      }
+
       setState(() {
         _timeLeft--;
       });
@@ -109,11 +120,18 @@ class _QuestionState extends ConsumerState<Question> {
   }
 
   void _handleTimeUp() {
-    // Handle the case where the time limit has been reached
-    // You can add your logic here, such as submitting the current answers,
-    // showing a dialog, or moving to the next question
+    if (_modalVisible) return; // Prevent showing modal if it's already visible
+
     _timer?.cancel();
+    _endQuiz();
     _showCompletionDialog();
+  }
+
+  void _endQuiz() {
+    setState(() {
+      _quizEnded = true;
+      _hasStarted = false;
+    });
   }
 
   // Get color for the indicator based on answer status
@@ -136,6 +154,8 @@ class _QuestionState extends ConsumerState<Question> {
 
   // Handle answer selection
   void _handleAnswerSelected() {
+    if (_quizEnded) return; // Don't process answers if quiz has ended
+
     final state = ref.watch(questionNotifierProvider);
     final questions = state['questions'];
     final answeredQuestions =
@@ -152,7 +172,7 @@ class _QuestionState extends ConsumerState<Question> {
 
     // Wait a moment to show the answer feedback before scrolling
     Future.delayed(const Duration(milliseconds: 150), () {
-      if (_index < questions.length - 1) {
+      if (_index < questions.length - 1 && !_quizEnded) {
         _pageController.animateToPage(
           _index + 1,
           duration: const Duration(milliseconds: 300),
@@ -160,23 +180,29 @@ class _QuestionState extends ConsumerState<Question> {
         );
       }
 
-      // Only show completion dialog if all questions are answered
-      if (allQuestionsAnswered) {
+      // Only show completion dialog if all questions are answered and no modal is visible
+      if (allQuestionsAnswered && !_modalVisible) {
+        _endQuiz();
         _showCompletionDialog();
       }
     });
   }
 
   void _showCompletionDialog() {
+    if (_modalVisible) return; // Prevent multiple modals
+
+    setState(() {
+      _modalVisible = true;
+    });
+
     final state = ref.watch(questionNotifierProvider);
     final questions = state['questions'];
-    final answeredQuestions = state['answeredQuestions']
-        as Map<int, QuestionResponse>; // Explicit type casting;
+    final answeredQuestions =
+        state['answeredQuestions'] as Map<int, QuestionResponse>;
 
     // Calculate score
-    int correctAnswers = answeredQuestions.values
-        .where((response) => response.isCorrect) // Explicit boolean comparison
-        .length;
+    int correctAnswers =
+        answeredQuestions.values.where((response) => response.isCorrect).length;
 
     showDialog(
       context: context,
@@ -187,10 +213,17 @@ class _QuestionState extends ConsumerState<Question> {
           totalQuestions: questions.length,
           onTryAgain: () {
             Navigator.of(context).pop();
+            setState(() {
+              _modalVisible = false;
+            });
             _resetQuiz();
           },
           onClose: () {
             Navigator.of(context).pop();
+            setState(() {
+              _modalVisible = false;
+              // Keep _quizEnded as true to prevent further interaction
+            });
           },
         );
       },
@@ -237,13 +270,13 @@ class _QuestionState extends ConsumerState<Question> {
                       questions[index],
                       visibility: visibility,
                       onAnswerSelected: _handleAnswerSelected,
+                      isQuizEnded: _quizEnded, // Pass quiz ended state to card
                     ),
                   );
                 },
               ),
             ),
-            const SizedBox(
-                height: 10), // Reduced space between cards and indicators
+            const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 13),
               child: Container(

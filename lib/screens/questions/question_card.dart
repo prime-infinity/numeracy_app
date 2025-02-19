@@ -6,12 +6,18 @@ import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
 
 class QuestionCard extends ConsumerStatefulWidget {
-  const QuestionCard(this.question,
-      {required this.visibility, required this.onAnswerSelected, super.key});
+  const QuestionCard(
+    this.question, {
+    required this.visibility,
+    required this.onAnswerSelected,
+    required this.isQuizEnded, // Add quiz ended state
+    super.key,
+  });
 
   final Question question;
   final double visibility;
   final void Function() onAnswerSelected;
+  final bool isQuizEnded; // Track if the quiz has ended
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _QuestionCardState();
@@ -19,6 +25,9 @@ class QuestionCard extends ConsumerStatefulWidget {
 
 class _QuestionCardState extends ConsumerState<QuestionCard> {
   void _handleOptionSelection(String optionId, int answerValue) {
+    // Don't allow selection if quiz has ended
+    if (widget.isQuizEnded) return;
+
     // Check if the question has already been answered
     final questionNumber = widget.question.questionNumber;
     final questionNotifier = ref.read(questionNotifierProvider.notifier);
@@ -97,7 +106,6 @@ class _QuestionCardState extends ConsumerState<QuestionCard> {
           SizedBox(height: verticalPadding),
 
           // Question text
-
           StyledLargeText(widget.question.questionText, AppColors.white),
 
           // Use Expanded with a Container to center the grid vertically in remaining space
@@ -107,41 +115,52 @@ class _QuestionCardState extends ConsumerState<QuestionCard> {
                 padding: const EdgeInsets.all(28), // Equal padding on all sides
                 child: AspectRatio(
                   aspectRatio: 1.0,
-                  child: GridView.builder(
-                    itemCount: widget.question.options.length,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                      childAspectRatio: 1.0,
-                    ),
-                    itemBuilder: (context, index) {
-                      final option = widget.question.options[index];
-                      final optionId = option.keys.first;
-                      final optionValue = option.values.first;
+                  child: Stack(
+                    children: [
+                      GridView.builder(
+                        itemCount: widget.question.options.length,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          childAspectRatio: 1.0,
+                        ),
+                        itemBuilder: (context, index) {
+                          final option = widget.question.options[index];
+                          final optionId = option.keys.first;
+                          final optionValue = option.values.first;
 
-                      return AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        child: GestureDetector(
-                          onTap: () =>
-                              _handleOptionSelection(optionId, optionValue),
+                          return AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            child: GestureDetector(
+                              onTap: () =>
+                                  _handleOptionSelection(optionId, optionValue),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: _getOptionColor(
+                                      widget.question.questionNumber, optionId),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                alignment: Alignment.center,
+                                child: StyledOptionsText(
+                                  optionValue.toString(),
+                                  AppColors.black,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      // Add overlay when quiz has ended to prevent touches
+                      if (widget.isQuizEnded)
+                        Positioned.fill(
                           child: Container(
-                            decoration: BoxDecoration(
-                              color: _getOptionColor(
-                                  widget.question.questionNumber, optionId),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            alignment: Alignment.center,
-                            child: StyledOptionsText(
-                              optionValue.toString(),
-                              AppColors.black,
-                            ),
+                            color: Colors.transparent,
                           ),
                         ),
-                      );
-                    },
+                    ],
                   ),
                 ),
               ),
