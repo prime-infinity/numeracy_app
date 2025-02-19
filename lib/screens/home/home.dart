@@ -33,7 +33,7 @@ class _HomeState extends ConsumerState<Home> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    StyledMediumText("Hi Prime", AppColors.black),
+                    StyledMediumText("Hi", AppColors.black),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

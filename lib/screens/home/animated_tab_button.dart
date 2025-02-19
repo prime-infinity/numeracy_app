@@ -64,56 +64,41 @@ class _AnimatedTabButtonState extends State<AnimatedTabButton>
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: widget.onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: widget.isSelected ? AppColors.white : AppColors.primaryAccent,
-          borderRadius: BorderRadius.vertical(
-            top: const Radius.circular(22),
-            bottom: Radius.circular(widget.isSelected ? 0 : 22),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(0),
-          child: SizedBox(
-            width: 53.77,
-            height: 53.77,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(18),
-              child: Stack(
-                children: [
-                  // Background container
-                  Container(
-                    color: AppColors.primaryAccent,
-                  ),
-                  // Animated radial spread
-                  AnimatedBuilder(
-                    animation: _animation,
-                    builder: (context, child) {
-                      return CustomPaint(
-                        size: const Size(53.77, 53.77),
-                        painter: RadialSpreadPainter(
-                          animation: _animation.value,
-                          primaryColor: AppColors.primaryColor,
-                        ),
-                      );
-                    },
-                  ),
-                  // Icon
-                  Center(
-                    child: Text(
-                      widget.icon,
-                      style: TextStyle(
-                        fontSize: 24,
-                        color: AppColors.white,
-                      ),
-                    ),
-                  ),
-                ],
+      child: SizedBox(
+        width: 75, // Increased width
+        height: 75, // Increased height
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(22),
+          child: Stack(
+            children: [
+              // Background container
+              Container(
+                color: AppColors.primaryAccent,
               ),
-            ),
+              // Animated radial spread
+              AnimatedBuilder(
+                animation: _animation,
+                builder: (context, child) {
+                  return CustomPaint(
+                    size: const Size(75, 75), // Increased size
+                    painter: RadialSpreadPainter(
+                      animation: _animation.value,
+                      primaryColor: AppColors.primaryColor,
+                    ),
+                  );
+                },
+              ),
+              // Icon
+              Center(
+                child: Text(
+                  widget.icon,
+                  style: TextStyle(
+                    fontSize: 28, // Increased font size
+                    color: AppColors.white,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

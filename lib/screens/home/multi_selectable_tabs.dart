@@ -44,14 +44,13 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
             ),
           ),
           // Extension containers for selected tabs
-          _buildExtensionContainers(),
         ]),
         // Difficulty level section
         AnimatedContainer(
           duration: const Duration(milliseconds: 300), // Animation duration
           curve: Curves.easeInOut,
           decoration: BoxDecoration(
-            color: AppColors.white, // Background color of the container
+            color: AppColors.cardGrey, // Background color of the container
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(
                   AppDimensions.cardRadius), // Adjust the radius as needed
@@ -64,11 +63,11 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 30),
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                StyledSmallText("2: Select difficulty level", AppColors.black),
+                StyledSmallText("2: Select difficulty range", AppColors.black),
                 //difficulty slider
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -120,13 +119,12 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
                         ))
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 Center(
                     child: StyledButton(
                   text: "Begin",
                   onPressed: _handleBegin,
-                  backgroundColor:
-                      _canBegin() ? AppColors.black : AppColors.cardGrey,
+                  backgroundColor: _canBegin() ? AppColors.black : Colors.grey,
                 ))
               ],
             ),
@@ -182,24 +180,6 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
       onTap: () => _handleTabPress(index),
       onAnimationProgress: (progress) =>
           _handleAnimationProgress(index, progress),
-    );
-  }
-
-  Widget _buildExtensionContainers() {
-    return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: List.generate(
-          _tabs.length,
-          (index) => AnimatedExtensionContainer(
-            isSelected: _selectedTabs[index],
-            animationProgress: _animationProgress[index],
-          ),
-        ),
-      ),
     );
   }
 }
