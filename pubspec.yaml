@@ -39,6 +39,7 @@ dependencies:
   riverpod_annotation: ^2.6.1
   go_router: ^14.6.2
   flutter_launcher_icons: ^0.14.3
+  rename: ^3.0.2
 
 dev_dependencies:
   flutter_test:
