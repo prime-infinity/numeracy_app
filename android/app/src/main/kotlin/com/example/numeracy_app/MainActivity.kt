@@ -1,4 +1,4 @@
-package com.example.numeracy_app
+package com.owama.numeracy
 
 import io.flutter.embedding.android.FlutterActivity
 
