@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:numeracy_app/models/operation.dart';
 import 'package:numeracy_app/models/question_response.dart';
 import 'package:numeracy_app/providers/question_provider.dart';
@@ -28,10 +30,10 @@ class _QuestionState extends ConsumerState<Question> {
 
   double _currentPage = 0;
   int _index = 0;
-  bool _hasStarted = false; // Flag to track if timer should start
-  bool _wasEverStarted = false; // Track if quiz was ever completed
-  bool _quizEnded = false; // Track if the quiz has ended
-  bool _modalVisible = false; // Track if the completion modal is visible
+  bool _hasStarted = false;
+  bool _wasEverStarted = false;
+  bool _quizEnded = false;
+  bool _modalVisible = false;
 
   // Timer variables
   int _timeLeft = 0;
@@ -45,7 +47,6 @@ class _QuestionState extends ConsumerState<Question> {
         _currentPage = _pageController.page ?? 0;
       });
     });
-    // Delay provider modification until after the first frame.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(questionNotifierProvider.notifier).replaceQuestions(
           generateQuestions(
@@ -60,15 +61,12 @@ class _QuestionState extends ConsumerState<Question> {
   }
 
   void _resetQuiz() {
-    // Cancel existing timer
     _timer?.cancel();
     _timer = null;
 
-    // Generate new questions using the provider
     ref.read(questionNotifierProvider.notifier).replaceQuestions(
         generateQuestions(range: widget.range, operations: widget.operations));
 
-    // Reset all state variables
     setState(() {
       _hasStarted = false;
       _currentPage = 0;
@@ -79,7 +77,6 @@ class _QuestionState extends ConsumerState<Question> {
       _initializeTimer();
     });
 
-    // Animate back to first question
     _pageController.animateToPage(
       0,
       duration: const Duration(milliseconds: 300),
@@ -95,8 +92,7 @@ class _QuestionState extends ConsumerState<Question> {
   }
 
   void _startTimer() {
-    if (_timer != null || _hasStarted || _quizEnded)
-      return; // Don't start if already running or ended
+    if (_timer != null || _hasStarted || _quizEnded) return;
 
     setState(() {
       _hasStarted = true;
@@ -120,7 +116,7 @@ class _QuestionState extends ConsumerState<Question> {
   }
 
   void _handleTimeUp() {
-    if (_modalVisible) return; // Prevent showing modal if it's already visible
+    if (_modalVisible) return;
 
     _timer?.cancel();
     _endQuiz();
@@ -134,7 +130,6 @@ class _QuestionState extends ConsumerState<Question> {
     });
   }
 
-  // Get color for the indicator based on answer status
   Color _getIndicatorColor(int index) {
     final state = ref.watch(questionNotifierProvider);
     final questions = state['questions'];
@@ -142,35 +137,30 @@ class _QuestionState extends ConsumerState<Question> {
 
     final currentQuestion = questions[index];
 
-    // Check if the question has been answered
     if (!answeredQuestions.containsKey(currentQuestion.questionNumber)) {
-      return _index == index ? AppColors.primaryColor : AppColors.white;
+      return _index == index ? AppColors.primaryColor : AppColors.textTertiary;
     }
 
     return answeredQuestions[currentQuestion.questionNumber]!.isCorrect
-        ? AppColors.successColor // Green for correct
-        : AppColors.failureColor; // Red for incorrect
+        ? AppColors.successColor
+        : AppColors.errorColor;
   }
 
-  // Handle answer selection
   void _handleAnswerSelected() {
-    if (_quizEnded) return; // Don't process answers if quiz has ended
+    if (_quizEnded) return;
 
     final state = ref.watch(questionNotifierProvider);
     final questions = state['questions'];
     final answeredQuestions =
         state['answeredQuestions'] as Map<int, QuestionResponse>;
 
-    // Start timer on first attempt if not already started
     if (!_hasStarted) {
       _startTimer();
     }
 
-    // Check if all questions have been answered
     bool allQuestionsAnswered = questions.every(
         (question) => answeredQuestions.containsKey(question.questionNumber));
 
-    // Wait a moment to show the answer feedback before scrolling
     Future.delayed(const Duration(milliseconds: 150), () {
       if (_index < questions.length - 1 && !_quizEnded) {
         _pageController.animateToPage(
@@ -180,7 +170,6 @@ class _QuestionState extends ConsumerState<Question> {
         );
       }
 
-      // Only show completion dialog if all questions are answered and no modal is visible
       if (allQuestionsAnswered && !_modalVisible) {
         _endQuiz();
         _showCompletionDialog();
@@ -189,7 +178,7 @@ class _QuestionState extends ConsumerState<Question> {
   }
 
   void _showCompletionDialog() {
-    if (_modalVisible) return; // Prevent multiple modals
+    if (_modalVisible) return;
 
     setState(() {
       _modalVisible = true;
@@ -200,7 +189,6 @@ class _QuestionState extends ConsumerState<Question> {
     final answeredQuestions =
         state['answeredQuestions'] as Map<int, QuestionResponse>;
 
-    // Calculate score
     int correctAnswers =
         answeredQuestions.values.where((response) => response.isCorrect).length;
 
@@ -222,7 +210,6 @@ class _QuestionState extends ConsumerState<Question> {
             Navigator.of(context).pop();
             setState(() {
               _modalVisible = false;
-              // Keep _quizEnded as true to prevent further interaction
             });
           },
         );
@@ -230,25 +217,155 @@ class _QuestionState extends ConsumerState<Question> {
     );
   }
 
+  String _formatTime(int seconds) {
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Watch the questions from the provider
     final state = ref.watch(questionNotifierProvider);
     final questions = state['questions'];
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text("questions"),
+        backgroundColor: AppColors.surface,
+        foregroundColor: AppColors.textPrimary,
+        elevation: 0,
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_rounded),
+          onPressed: () => context.go('/home'),
+        ),
+        title: Text(
+          'Practice Session',
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        actions: [
+          if (_wasEverStarted)
+            IconButton(
+              icon: const Icon(Icons.refresh_rounded),
+              onPressed: _resetQuiz,
+              tooltip: 'Restart Quiz',
+            ),
+        ],
       ),
-      body: Center(
+      body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Spacer(flex: 2), // Top spacing
-            SizedBox(
-              height: 543,
+            // Progress and Timer Section
+            Container(
+              margin: EdgeInsets.all(AppDimensions.spacingM),
+              padding: EdgeInsets.all(AppDimensions.spacingM),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius:
+                    BorderRadius.circular(AppDimensions.containerRadius),
+                border: Border.all(
+                  color: AppColors.borderColor,
+                  width: 1,
+                ),
+                boxShadow: AppShadows.cardShadow,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Progress indicators
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.quiz_rounded,
+                        color: AppColors.primaryColor,
+                        size: 20,
+                      ),
+                      SizedBox(width: AppDimensions.spacingS),
+                      Text(
+                        '${_index + 1} of ${questions.length}',
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      SizedBox(width: AppDimensions.spacingM),
+                      ...List.generate(
+                        questions.length > 8 ? 8 : questions.length,
+                        (index) => Container(
+                          margin:
+                              EdgeInsets.only(right: AppDimensions.spacingXS),
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: _getIndicatorColor(index),
+                          ),
+                        ),
+                      ),
+                      if (questions.length > 8)
+                        Text(
+                          '...',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                    ],
+                  ),
+                  // Timer
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppDimensions.spacingM,
+                      vertical: AppDimensions.spacingS,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _timeLeft <= 10
+                          ? AppColors.errorColor.withOpacity(0.1)
+                          : AppColors.primaryAccent,
+                      borderRadius:
+                          BorderRadius.circular(AppDimensions.chipRadius),
+                      border: Border.all(
+                        color: _timeLeft <= 10
+                            ? AppColors.errorColor
+                            : AppColors.primaryColor,
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.timer_rounded,
+                          size: 16,
+                          color: _timeLeft <= 10
+                              ? AppColors.errorColor
+                              : AppColors.primaryColor,
+                        ),
+                        SizedBox(width: AppDimensions.spacingXS),
+                        Text(
+                          _formatTime(_timeLeft),
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: _timeLeft <= 10
+                                ? AppColors.errorColor
+                                : AppColors.primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Questions Section
+            Expanded(
               child: PageView.builder(
                 controller: _pageController,
                 scrollDirection: Axis.horizontal,
@@ -265,74 +382,65 @@ class _QuestionState extends ConsumerState<Question> {
                   double delta = index - _currentPage;
                   double visibility = 1 - delta.abs().clamp(0.0, 1.0);
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppDimensions.spacingS,
+                    ),
                     child: QuestionCard(
                       questions[index],
                       visibility: visibility,
                       onAnswerSelected: _handleAnswerSelected,
-                      isQuizEnded: _quizEnded, // Pass quiz ended state to card
+                      isQuizEnded: _quizEnded,
                     ),
                   );
                 },
               ),
             ),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 13),
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                decoration: BoxDecoration(
-                    color: AppColors.cardGrey,
-                    borderRadius:
-                        BorderRadius.circular(AppDimensions.cardRadius)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: List.generate(
-                        questions.length,
-                        (index) => Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: _getIndicatorColor(index),
+
+            // Instructions or Status - Modified to act as placeholder
+            Container(
+              margin: EdgeInsets.all(AppDimensions.spacingM),
+              padding: EdgeInsets.all(AppDimensions.spacingM),
+              decoration: BoxDecoration(
+                color: (!_hasStarted && !_wasEverStarted)
+                    ? AppColors.primaryAccent
+                    : Colors.transparent,
+                borderRadius:
+                    BorderRadius.circular(AppDimensions.containerRadius),
+                border: (!_hasStarted && !_wasEverStarted)
+                    ? Border.all(
+                        color: AppColors.primaryColor.withOpacity(0.2),
+                        width: 1,
+                      )
+                    : null,
+              ),
+              child: (!_hasStarted && !_wasEverStarted)
+                  ? Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline_rounded,
+                          color: AppColors.primaryColor,
+                          size: 20,
+                        ),
+                        SizedBox(width: AppDimensions.spacingM),
+                        Expanded(
+                          child: Text(
+                            'Tap any answer to start the timer and begin your practice session',
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.primaryColor,
                             ),
                           ),
                         ),
-                      ),
+                      ],
+                    )
+                  : const SizedBox(
+                      height:
+                          45, // Approximate height to match the original content
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius:
-                              BorderRadius.circular(AppDimensions.cardRadius)),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.access_time,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '$_timeLeft',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ),
-            const Spacer(flex: 3), // Bottom spacing
+
+            SizedBox(height: AppDimensions.spacingM),
           ],
         ),
       ),

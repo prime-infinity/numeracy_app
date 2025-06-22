@@ -1,194 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:numeracy_app/theme.dart';
 
-class AnimatedTabButton extends StatefulWidget {
+class AnimatedTabButton extends StatelessWidget {
   final bool isSelected;
   final String icon;
+  final String label;
   final VoidCallback onTap;
-  final Function(double progress) onAnimationProgress;
 
   const AnimatedTabButton({
     super.key,
     required this.isSelected,
     required this.icon,
+    required this.label,
     required this.onTap,
-    required this.onAnimationProgress,
   });
-
-  @override
-  State<AnimatedTabButton> createState() => _AnimatedTabButtonState();
-}
-
-class _AnimatedTabButtonState extends State<AnimatedTabButton>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _animation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    )..addListener(() {
-        // Start extension animation when radial spread is 70% complete
-        if (_animation.value >= 0.1) {
-          widget.onAnimationProgress(_animation.value);
-        }
-      });
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(AnimatedTabButton oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.isSelected != oldWidget.isSelected) {
-      if (widget.isSelected) {
-        _animationController.forward();
-      } else {
-        _animationController.reverse();
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.onTap,
-      child: SizedBox(
-        width: 75, // Increased width
-        height: 75, // Increased height
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(22),
-          child: Stack(
-            children: [
-              // Background container
-              Container(
-                color: AppColors.primaryAccent,
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        width: 80,
+        height: 80,
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primaryColor : AppColors.surface,
+          borderRadius: BorderRadius.circular(AppDimensions.containerRadius),
+          border: Border.all(
+            color: isSelected ? AppColors.primaryColor : AppColors.borderColor,
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              icon,
+              style: GoogleFonts.poppins(
+                fontSize: 32, // Increased from 28
+                fontWeight: FontWeight.w600,
+                color: isSelected ? Colors.white : AppColors.textPrimary,
               ),
-              // Animated radial spread
-              AnimatedBuilder(
-                animation: _animation,
-                builder: (context, child) {
-                  return CustomPaint(
-                    size: const Size(75, 75), // Increased size
-                    painter: RadialSpreadPainter(
-                      animation: _animation.value,
-                      primaryColor: AppColors.primaryColor,
-                    ),
-                  );
-                },
-              ),
-              // Icon
-              Center(
-                child: Text(
-                  widget.icon,
-                  style: TextStyle(
-                    fontSize: 28, // Increased font size
-                    color: AppColors.white,
-                  ),
+            ),
+            if (label.isNotEmpty) ...[
+              SizedBox(height: AppDimensions.spacingXS),
+              Text(
+                label,
+                style: GoogleFonts.poppins(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                  color: isSelected
+                      ? Colors.white.withOpacity(0.9)
+                      : AppColors.textSecondary,
                 ),
               ),
             ],
-          ),
+          ],
         ),
       ),
     );
-  }
-}
-
-class RadialSpreadPainter extends CustomPainter {
-  final double animation;
-  final Color primaryColor;
-
-  RadialSpreadPainter({
-    required this.animation,
-    required this.primaryColor,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius =
-        (size.width * 1.2) * animation; // Slightly larger than container
-
-    final paint = Paint()
-      ..color = primaryColor
-      ..style = PaintingStyle.fill;
-
-    canvas.drawCircle(center, radius, paint);
-  }
-
-  @override
-  bool shouldRepaint(RadialSpreadPainter oldDelegate) {
-    return animation != oldDelegate.animation;
-  }
-}
-
-class AnimatedExtensionContainer extends StatelessWidget {
-  final bool isSelected;
-  final double animationProgress;
-
-  const AnimatedExtensionContainer({
-    super.key,
-    required this.isSelected,
-    required this.animationProgress,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    // Calculate the fill progress (0.0 to 1.0) based on the button's animation progress
-    // Map the 0.7-1.0 range of button animation to 0.0-1.0 for extension
-    double fillProgress =
-        isSelected ? ((animationProgress - 0.7) / 0.3).clamp(0.0, 1.0) : 0.0;
-
-    return CustomPaint(
-      size: const Size(73.77, 25),
-      painter: ExtensionPainter(
-        progress: fillProgress,
-        color: AppColors.white,
-      ),
-    );
-  }
-}
-
-class ExtensionPainter extends CustomPainter {
-  final double progress;
-  final Color color;
-
-  ExtensionPainter({
-    required this.progress,
-    required this.color,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
-
-    // Draw from top to bottom
-    final rect = Rect.fromLTWH(
-      0,
-      0, // Start from top
-      size.width,
-      size.height * progress, // Height based on progress
-    );
-
-    canvas.drawRect(rect, paint);
-  }
-
-  @override
-  bool shouldRepaint(ExtensionPainter oldDelegate) {
-    return progress != oldDelegate.progress || color != oldDelegate.color;
   }
 }

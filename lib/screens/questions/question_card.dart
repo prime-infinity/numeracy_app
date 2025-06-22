@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:numeracy_app/models/question.dart';
 import 'package:numeracy_app/providers/question_provider.dart';
-import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
 
 class QuestionCard extends ConsumerStatefulWidget {
@@ -10,25 +10,50 @@ class QuestionCard extends ConsumerStatefulWidget {
     this.question, {
     required this.visibility,
     required this.onAnswerSelected,
-    required this.isQuizEnded, // Add quiz ended state
+    required this.isQuizEnded,
     super.key,
   });
 
   final Question question;
   final double visibility;
   final void Function() onAnswerSelected;
-  final bool isQuizEnded; // Track if the quiz has ended
+  final bool isQuizEnded;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _QuestionCardState();
 }
 
-class _QuestionCardState extends ConsumerState<QuestionCard> {
+class _QuestionCardState extends ConsumerState<QuestionCard>
+    with TickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+  String? _selectedOptionId;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _pulseAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(CurvedAnimation(
+      parent: _pulseController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
   void _handleOptionSelection(String optionId, int answerValue) {
-    // Don't allow selection if quiz has ended
     if (widget.isQuizEnded) return;
 
-    // Check if the question has already been answered
     final questionNumber = widget.question.questionNumber;
     final questionNotifier = ref.read(questionNotifierProvider.notifier);
 
@@ -36,138 +61,246 @@ class _QuestionCardState extends ConsumerState<QuestionCard> {
       return;
     }
 
-    //record the answer in the provider
+    setState(() {
+      _selectedOptionId = optionId;
+    });
+
+    // Trigger pulse animation
+    _pulseController.forward().then((_) {
+      _pulseController.reverse();
+    });
+
+    // Record the answer in the provider
     questionNotifier.recordAnswer(
         questionNumber, widget.question.isCorrect(answerValue), optionId);
 
-    widget.onAnswerSelected();
+    // Delay to show the selection feedback
+    Future.delayed(const Duration(milliseconds: 100), () {
+      widget.onAnswerSelected();
+    });
   }
 
   Color _getOptionColor(int questionNumber, String optionId) {
-    //check if this question has been answered at all.
-    //i.e if the questionNumber exsist in QuestionResponse
     final questionNotifier = ref.watch(questionNotifierProvider.notifier);
 
-    //if question not yet answered, then white
     if (!questionNotifier.isQuestionAnswered(questionNumber)) {
-      return AppColors.white;
+      return AppColors.surface;
     }
 
-    //if question answered, check if answered correctly
     if (questionNotifier.isQuestionAnswered(questionNumber)) {
-      //get response of question
       final questionRes = questionNotifier.getQuestionResponse(questionNumber);
       final correctOption = widget.question.getCorrectOptionId();
 
-      //if got it correct
       if (questionRes!.isCorrect) {
-        //check if this optionid is the selected
         if (optionId == questionRes.selectedOption) {
           return AppColors.successColor;
         }
-      }
-      //if got wrong
-      if (!questionRes.isCorrect) {
+      } else {
         if (optionId == questionRes.selectedOption) {
-          return AppColors.failureColor;
+          return AppColors.errorColor;
         }
-        // Color the correct option green
         if (optionId == correctOption) {
           return AppColors.successColor;
         }
       }
     }
 
-    return AppColors.white;
+    return AppColors.surface;
+  }
+
+  Color _getOptionTextColor(int questionNumber, String optionId) {
+    final questionNotifier = ref.watch(questionNotifierProvider.notifier);
+
+    if (!questionNotifier.isQuestionAnswered(questionNumber)) {
+      return AppColors.textPrimary;
+    }
+
+    if (questionNotifier.isQuestionAnswered(questionNumber)) {
+      final questionRes = questionNotifier.getQuestionResponse(questionNumber);
+      final correctOption = widget.question.getCorrectOptionId();
+
+      if (questionRes!.isCorrect) {
+        if (optionId == questionRes.selectedOption) {
+          return Colors.white;
+        }
+      } else {
+        if (optionId == questionRes.selectedOption ||
+            optionId == correctOption) {
+          return Colors.white;
+        }
+      }
+    }
+
+    return AppColors.textPrimary;
+  }
+
+  IconData? _getOptionIcon(int questionNumber, String optionId) {
+    final questionNotifier = ref.watch(questionNotifierProvider.notifier);
+
+    if (!questionNotifier.isQuestionAnswered(questionNumber)) {
+      return null;
+    }
+
+    if (questionNotifier.isQuestionAnswered(questionNumber)) {
+      final questionRes = questionNotifier.getQuestionResponse(questionNumber);
+      final correctOption = widget.question.getCorrectOptionId();
+
+      if (questionRes!.isCorrect && optionId == questionRes.selectedOption) {
+        return Icons.check_rounded;
+      } else if (!questionRes.isCorrect) {
+        if (optionId == questionRes.selectedOption) {
+          return Icons.close_rounded;
+        }
+        if (optionId == correctOption) {
+          return Icons.check_rounded;
+        }
+      }
+    }
+
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    final verticalPadding = screenSize.height * 0.07; // 7% of screen height
+    final cardHeight = screenSize.height * 0.65;
+    final cardWidth = screenSize.width * 0.9;
 
-    Color cardColor = Color.lerp(
-      AppColors.primaryAccent,
-      AppColors.primaryColor,
-      widget.visibility,
-    )!;
-
-    return Container(
-      width: 382,
-      height: 543,
-      constraints: const BoxConstraints(maxWidth: 382),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(height: verticalPadding),
-
-          // Question text
-          StyledLargeText(widget.question.questionText, AppColors.white),
-
-          // Use Expanded with a Container to center the grid vertically in remaining space
-          Expanded(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(28), // Equal padding on all sides
-                child: AspectRatio(
-                  aspectRatio: 1.0,
-                  child: Stack(
+    return AnimatedBuilder(
+      animation: _pulseAnimation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _selectedOptionId != null ? _pulseAnimation.value : 1.0,
+          child: Container(
+            width: cardWidth,
+            height: cardHeight,
+            margin: EdgeInsets.symmetric(horizontal: AppDimensions.spacingS),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+              border: Border.all(
+                color: AppColors.borderColor,
+                width: 1,
+              ),
+            ),
+            child: Column(
+              children: [
+                // Question Header
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(AppDimensions.spacingL),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryLight,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(AppDimensions.cardRadius),
+                      topRight: Radius.circular(AppDimensions.cardRadius),
+                    ),
+                  ),
+                  child: Column(
                     children: [
-                      GridView.builder(
-                        itemCount: widget.question.options.length,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 10,
-                          crossAxisSpacing: 10,
-                          childAspectRatio: 1.0,
+                      Text(
+                        widget.question.questionText,
+                        style: GoogleFonts.poppins(
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primaryAccent,
+                          height: 1.2,
                         ),
-                        itemBuilder: (context, index) {
-                          final option = widget.question.options[index];
-                          final optionId = option.keys.first;
-                          final optionValue = option.values.first;
-
-                          return AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            child: GestureDetector(
-                              onTap: () =>
-                                  _handleOptionSelection(optionId, optionValue),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: _getOptionColor(
-                                      widget.question.questionNumber, optionId),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                alignment: Alignment.center,
-                                child: StyledOptionsText(
-                                  optionValue.toString(),
-                                  AppColors.black,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
+                        textAlign: TextAlign.center,
                       ),
-                      // Add overlay when quiz has ended to prevent touches
-                      if (widget.isQuizEnded)
-                        Positioned.fill(
-                          child: Container(
-                            color: Colors.transparent,
-                          ),
-                        ),
                     ],
                   ),
                 ),
-              ),
+
+                // Answer Options
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(AppDimensions.spacingL),
+                    child: GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: widget.question.options.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 16,
+                        childAspectRatio: 1.0,
+                      ),
+                      itemBuilder: (context, index) {
+                        final option = widget.question.options[index];
+                        final optionId = option.keys.first;
+                        final optionValue = option.values.first;
+
+                        return GestureDetector(
+                          onTap: () =>
+                              _handleOptionSelection(optionId, optionValue),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            decoration: BoxDecoration(
+                              color: _getOptionColor(
+                                  widget.question.questionNumber, optionId),
+                              borderRadius: BorderRadius.circular(
+                                  AppDimensions.containerRadius),
+                              border: Border.all(
+                                color: _getOptionColor(
+                                            widget.question.questionNumber,
+                                            optionId) ==
+                                        AppColors.surface
+                                    ? AppColors.borderColor
+                                    : _getOptionColor(
+                                        widget.question.questionNumber,
+                                        optionId),
+                                width: 2,
+                              ),
+                            ),
+                            child: Stack(
+                              children: [
+                                Center(
+                                  child: Text(
+                                    optionValue.toString(),
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.bold,
+                                      color: _getOptionTextColor(
+                                          widget.question.questionNumber,
+                                          optionId),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+
+                // Instructions at bottom
+                if (!ref
+                        .watch(questionNotifierProvider.notifier)
+                        .isQuestionAnswered(widget.question.questionNumber) &&
+                    !widget.isQuizEnded)
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(AppDimensions.spacingM),
+                    child: Text(
+                      'Tap your answer',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textSecondary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                SizedBox(height: AppDimensions.spacingS),
+              ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

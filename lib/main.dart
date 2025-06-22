@@ -4,8 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:numeracy_app/models/operation.dart';
 import 'package:numeracy_app/screens/home/home.dart';
 import 'package:numeracy_app/screens/questions/question.dart';
-import 'package:numeracy_app/shared/buttons/styled_button.dart';
-import 'package:numeracy_app/shared/texts/styled_text.dart';
+import 'package:numeracy_app/screens/splash/splash_screen.dart';
 import 'package:numeracy_app/theme.dart';
 
 void main() {
@@ -20,33 +19,65 @@ class MyApp extends StatelessWidget {
   MyApp({super.key});
 
   late final GoRouter _router = GoRouter(
+    initialLocation: '/', // Start with splash screen
     routes: [
-      GoRoute(path: '/', builder: (context, state) => const Home(), routes: [
-        GoRoute(
-          path: 'questions',
-          builder: (context, state) {
-            final range = state.uri.queryParameters['range'] ?? 'b';
-            final operationsParam = state.uri.queryParameters['operations'];
+      // Splash Screen Route
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const SplashScreen(),
+      ),
 
-            List<Operation> operations;
-            if (operationsParam != null && operationsParam.isNotEmpty) {
-              // The operations are expected as a comma-separated list (e.g., "addition,subtraction")
-              operations = operationsParam
-                  .split(',')
-                  .map((op) => OperationExtension.fromString(op))
-                  .toList();
-            } else {
-              // If no operations are provided, use all available operations.
-              operations = Operation.values;
-            }
+      // Home Route
+      GoRoute(
+        path: '/home',
+        builder: (context, state) => const Home(),
+        routes: [
+          GoRoute(
+            path: 'questions',
+            builder: (context, state) {
+              final range = state.uri.queryParameters['range'] ?? 'b';
+              final operationsParam = state.uri.queryParameters['operations'];
 
-            return Question(range: range, operations: operations);
-          },
-        ),
-      ]),
-      // You can add more routes here later
+              List<Operation> operations;
+              if (operationsParam != null && operationsParam.isNotEmpty) {
+                // The operations are expected as a comma-separated list (e.g., "addition,subtraction")
+                operations = operationsParam
+                    .split(',')
+                    .map((op) => OperationExtension.fromString(op))
+                    .toList();
+              } else {
+                // If no operations are provided, use all available operations.
+                operations = Operation.values;
+              }
+
+              return Question(range: range, operations: operations);
+            },
+          ),
+        ],
+      ),
+
+      // Direct Questions Route (for navigation from splash)
+      GoRoute(
+        path: '/questions',
+        builder: (context, state) {
+          final range = state.uri.queryParameters['range'] ?? 'b';
+          final operationsParam = state.uri.queryParameters['operations'];
+
+          List<Operation> operations;
+          if (operationsParam != null && operationsParam.isNotEmpty) {
+            operations = operationsParam
+                .split(',')
+                .map((op) => OperationExtension.fromString(op))
+                .toList();
+          } else {
+            operations = Operation.values;
+          }
+
+          return Question(range: range, operations: operations);
+        },
+      ),
     ],
-    // Optional: Add error handling
+    // Error handling
     errorBuilder: (context, state) => ErrorScreen(error: state.error),
   );
 
@@ -56,11 +87,12 @@ class MyApp extends StatelessWidget {
       theme: primaryTheme,
       routerConfig: _router,
       title: 'Numeracy',
+      debugShowCheckedModeBanner: false, // Remove debug banner for cleaner look
     );
   }
 }
 
-// Optional error screen for handling navigation errors
+// Error screen for handling navigation errors
 class ErrorScreen extends StatelessWidget {
   final Exception? error;
 
@@ -69,56 +101,53 @@ class ErrorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Error')),
-      body: Center(
-        child: Text('Something went wrong: ${error.toString()}'),
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: const Text('Oops!'),
+        centerTitle: true,
+        backgroundColor: AppColors.surface,
+        foregroundColor: AppColors.textPrimary,
       ),
-    );
-  }
-}
-
-class Sandbox extends StatelessWidget {
-  const Sandbox({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            StyledSmallText("normal text", AppColors.black),
-            StyledButton(
-                text: "save",
-                onPressed: () {
-                  //print('Save button pressed');
-                }),
-            // With custom width and colors:
-            StyledButton(
-              text: "Delete",
-              width: 200, // Specific width in pixels
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              onPressed: () {
-                //print('Delete button pressed');
-              },
-            ),
-            // With loading state:
-            StyledButton(
-              text: "Loading Example",
-              isLoading: true, // Shows loading spinner instead of text
-              onPressed: () {
-                //print('Button pressed');
-              },
-            ),
-            StyledButton(
-                text: "Primary button",
-                backgroundColor: AppColors.primaryColor,
-                onPressed: () {
-                  //print("primary button clicked");
-                }),
-          ],
+        child: Padding(
+          padding: EdgeInsets.all(AppDimensions.spacingL),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline_rounded,
+                size: 64,
+                color: AppColors.errorColor,
+              ),
+              SizedBox(height: AppDimensions.spacingM),
+              Text(
+                'Something went wrong',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              SizedBox(height: AppDimensions.spacingS),
+              Text(
+                'We encountered an unexpected error. Please try again.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              SizedBox(height: AppDimensions.spacingL),
+              ElevatedButton(
+                onPressed: () => context.go('/home'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryColor,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Go Home'),
+              ),
+            ],
+          ),
         ),
       ),
     );
