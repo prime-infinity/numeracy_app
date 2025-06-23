@@ -13,6 +13,30 @@ class Home extends ConsumerStatefulWidget {
 }
 
 class _HomeState extends ConsumerState<Home> {
+  // Track the current step progress
+  int _currentStep =
+      0; // 0: no progress, 1: operation selected, 2: difficulty selected, 3: starting
+
+  void _onOperationSelected(bool hasOperations) {
+    setState(() {
+      _currentStep = hasOperations ? 1 : 0;
+    });
+  }
+
+  void _onDifficultySelected() {
+    setState(() {
+      if (_currentStep >= 1) {
+        _currentStep = 2;
+      }
+    });
+  }
+
+  void _onStartPractice() {
+    setState(() {
+      _currentStep = 3;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -178,20 +202,6 @@ class _HomeState extends ConsumerState<Home> {
           // Section Header
           Row(
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: AppColors.secondaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  Icons.tune_rounded,
-                  color: AppColors.secondaryColor,
-                  size: 20,
-                ),
-              ),
-              SizedBox(width: AppDimensions.spacingM),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,7 +254,11 @@ class _HomeState extends ConsumerState<Home> {
           SizedBox(height: AppDimensions.spacingM),
 
           // Multi-selectable tabs
-          const MultiSelectableTabs(),
+          MultiSelectableTabs(
+            onOperationSelected: _onOperationSelected,
+            onDifficultySelected: _onDifficultySelected,
+            onStartPractice: _onStartPractice,
+          ),
         ],
       ),
     );
@@ -253,14 +267,14 @@ class _HomeState extends ConsumerState<Home> {
   Widget _buildStepIndicator() {
     return Row(
       children: [
-        _buildStepDot(isActive: true, stepNumber: 1),
-        _buildStepLine(),
-        _buildStepDot(isActive: false, stepNumber: 2),
-        _buildStepLine(),
-        _buildStepDot(isActive: false, stepNumber: 3),
+        _buildStepDot(isActive: _currentStep >= 1, stepNumber: 1),
+        _buildStepLine(isActive: _currentStep >= 2),
+        _buildStepDot(isActive: _currentStep >= 2, stepNumber: 2),
+        _buildStepLine(isActive: _currentStep >= 3),
+        _buildStepDot(isActive: _currentStep >= 3, stepNumber: 3),
         SizedBox(width: AppDimensions.spacingM),
         Text(
-          'Step 1 of 3',
+          'Step ${_currentStep > 0 ? _currentStep : 1} of 3',
           style: GoogleFonts.poppins(
             fontSize: 12,
             fontWeight: FontWeight.w500,
@@ -272,7 +286,9 @@ class _HomeState extends ConsumerState<Home> {
   }
 
   Widget _buildStepDot({required bool isActive, required int stepNumber}) {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
       width: 24,
       height: 24,
       decoration: BoxDecoration(
@@ -284,23 +300,26 @@ class _HomeState extends ConsumerState<Home> {
         ),
       ),
       child: Center(
-        child: Text(
-          stepNumber.toString(),
+        child: AnimatedDefaultTextStyle(
+          duration: const Duration(milliseconds: 300),
           style: GoogleFonts.poppins(
             fontSize: 12,
             fontWeight: FontWeight.w600,
             color: isActive ? Colors.white : AppColors.textSecondary,
           ),
+          child: Text(stepNumber.toString()),
         ),
       ),
     );
   }
 
-  Widget _buildStepLine() {
-    return Container(
+  Widget _buildStepLine({bool isActive = false}) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
       width: 20,
       height: 2,
-      color: AppColors.borderColor,
+      color: isActive ? AppColors.secondaryColor : AppColors.borderColor,
       margin: EdgeInsets.symmetric(horizontal: AppDimensions.spacingXS),
     );
   }

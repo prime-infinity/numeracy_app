@@ -271,7 +271,6 @@ class _QuestionState extends ConsumerState<Question> {
                   color: AppColors.borderColor,
                   width: 1,
                 ),
-                boxShadow: AppShadows.cardShadow,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

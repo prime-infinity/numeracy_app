@@ -6,7 +6,16 @@ import 'package:numeracy_app/theme.dart';
 import 'package:go_router/go_router.dart';
 
 class MultiSelectableTabs extends StatefulWidget {
-  const MultiSelectableTabs({super.key});
+  final Function(bool) onOperationSelected;
+  final VoidCallback onDifficultySelected;
+  final VoidCallback onStartPractice;
+
+  const MultiSelectableTabs({
+    super.key,
+    required this.onOperationSelected,
+    required this.onDifficultySelected,
+    required this.onStartPractice,
+  });
 
   @override
   MultiSelectableTabsState createState() => MultiSelectableTabsState();
@@ -15,7 +24,8 @@ class MultiSelectableTabs extends StatefulWidget {
 class MultiSelectableTabsState extends State<MultiSelectableTabs> {
   // Track selected tabs
   final List<bool> _selectedTabs = [false, false, false, false];
-  String _selectedRange = 'b'; // Default to 1-100
+  String _selectedRange = ''; // Start with no selection
+  bool _isStarting = false; // Track if we're in the starting animation
 
   // Tab data with corresponding operations
   final List<Map<String, dynamic>> _tabs = [
@@ -64,14 +74,8 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
 
   Widget _buildDifficultySection() {
     return Container(
-      padding: EdgeInsets.all(AppDimensions.spacingM),
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
         borderRadius: BorderRadius.circular(AppDimensions.containerRadius),
-        border: Border.all(
-          color: AppColors.borderColor,
-          width: 1,
-        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,7 +153,7 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
     final isSelected = _selectedRange == value;
 
     return GestureDetector(
-      onTap: () => setState(() => _selectedRange = value),
+      onTap: () => _handleDifficultySelection(value),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: EdgeInsets.symmetric(
@@ -207,10 +211,11 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
       width: double.infinity,
       height: AppDimensions.buttonHeight,
       child: ElevatedButton(
-        onPressed: canBegin ? _handleBegin : null,
+        onPressed: (canBegin && !_isStarting) ? _handleBegin : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor:
-              canBegin ? AppColors.primaryColor : AppColors.textTertiary,
+          backgroundColor: canBegin
+              ? (_isStarting ? AppColors.successColor : AppColors.primaryColor)
+              : AppColors.textTertiary,
           foregroundColor: Colors.white,
           elevation: canBegin ? 4 : 0,
           shadowColor: canBegin
@@ -222,35 +227,89 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
           disabledBackgroundColor: AppColors.textTertiary,
           disabledForegroundColor: Colors.white.withOpacity(0.7),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.play_arrow_rounded,
-              size: 20,
-              color: canBegin ? Colors.white : Colors.white.withOpacity(0.7),
-            ),
-            SizedBox(width: AppDimensions.spacingS),
-            Text(
-              'Start Custom Practice',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: _isStarting
+              ? Row(
+                  key: const ValueKey('loading'),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.white.withOpacity(0.8),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: AppDimensions.spacingS),
+                    Text(
+                      'Starting...',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                )
+              : Row(
+                  key: const ValueKey('start'),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.play_arrow_rounded,
+                      size: 20,
+                      color: canBegin
+                          ? Colors.white
+                          : Colors.white.withOpacity(0.7),
+                    ),
+                    SizedBox(width: AppDimensions.spacingS),
+                    Text(
+                      'Start Custom Practice',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );
   }
 
   bool _canBegin() {
-    // Check if at least one operation is selected
-    return _selectedTabs.contains(true);
+    // Check if at least one operation is selected AND a difficulty range is selected
+    return _selectedTabs.contains(true) && _selectedRange.isNotEmpty;
   }
 
-  void _handleBegin() {
-    if (!_canBegin()) return;
+  void _handleDifficultySelection(String value) {
+    setState(() {
+      _selectedRange = value;
+    });
+
+    // Only call the callback if we have operations selected too
+    if (_selectedTabs.contains(true)) {
+      widget.onDifficultySelected();
+    }
+  }
+
+  Future<void> _handleBegin() async {
+    if (!_canBegin() || _isStarting) return;
+
+    // Start the loading animation and trigger step 3
+    setState(() {
+      _isStarting = true;
+    });
+
+    widget.onStartPractice();
+
+    // Add a delay before navigation
+    await Future.delayed(const Duration(milliseconds: 1500));
+
+    if (!mounted) return;
 
     // Build a list of selected operation names.
     final selectedOps = <String>[];
@@ -264,12 +323,24 @@ class MultiSelectableTabsState extends State<MultiSelectableTabs> {
     final operationsQuery = selectedOps.join(',');
 
     // Navigate to the questions route with query parameters for range and operations.
-    context.go('/questions?range=$_selectedRange&operations=$operationsQuery');
+    if (mounted) {
+      context
+          .go('/questions?range=$_selectedRange&operations=$operationsQuery');
+    }
   }
 
   void _handleTabPress(int index) {
     setState(() {
       _selectedTabs[index] = !_selectedTabs[index];
     });
+
+    // Check if any operations are selected
+    final hasOperations = _selectedTabs.contains(true);
+    widget.onOperationSelected(hasOperations);
+
+    // If difficulty is also selected, update step 2
+    if (hasOperations && _selectedRange.isNotEmpty) {
+      widget.onDifficultySelected();
+    }
   }
 }
