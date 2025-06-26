@@ -223,6 +223,22 @@ class _QuestionState extends ConsumerState<Question> {
     return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
+  // Helper method to convert operations to string list
+  List<String> _getOperationStrings() {
+    return widget.operations.map((op) {
+      switch (op) {
+        case Operation.addition:
+          return 'addition';
+        case Operation.subtraction:
+          return 'subtraction';
+        case Operation.multiplication:
+          return 'multiplication';
+        case Operation.division:
+          return 'division';
+      }
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(questionNotifierProvider);
@@ -375,6 +391,9 @@ class _QuestionState extends ConsumerState<Question> {
                       visibility: visibility,
                       onAnswerSelected: _handleAnswerSelected,
                       isQuizEnded: _quizEnded,
+                      range: widget.range, // Pass the range parameter
+                      operations:
+                          _getOperationStrings(), // Pass operations as strings
                     ),
                   );
                 },

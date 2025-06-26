@@ -1,9 +1,120 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:numeracy_app/services/stats_service.dart';
 import 'package:numeracy_app/theme.dart';
 
-class Stats extends StatelessWidget {
+class Stats extends StatefulWidget {
   const Stats({super.key});
+
+  @override
+  State<Stats> createState() => _StatsState();
+}
+
+class _StatsState extends State<Stats> {
+  bool _isLoading = true;
+
+  // Stats data
+  int _totalAttempts = 0;
+  double _overallAccuracy = 0.0;
+  int _totalCorrect = 0;
+  int _currentStreak = 0;
+  int _bestStreak = 0;
+
+  // Operation stats
+  Map<String, Map<String, dynamic>> _operationStats = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStats();
+  }
+
+  void _loadStats() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Load overall stats
+    _totalAttempts = StatsService.getTotalAttempts();
+    _overallAccuracy = StatsService.getOverallAccuracy();
+    _totalCorrect = StatsService.getTotalCorrect();
+    _currentStreak = StatsService.getCurrentStreak();
+    _bestStreak = StatsService.getBestStreak();
+
+    // Load operation-specific stats
+    final operations = [
+      'addition',
+      'subtraction',
+      'multiplication',
+      'division'
+    ];
+    for (String operation in operations) {
+      final attempts = StatsService.getAttemptsByOperation(operation);
+      final correct = attempts.where((a) => a.result == 1).length;
+      final incorrect = attempts.length - correct;
+      final accuracy = StatsService.getAccuracyByOperation(operation);
+
+      _operationStats[operation] = {
+        'correct': correct,
+        'incorrect': incorrect,
+        'accuracy': accuracy,
+        'total': attempts.length,
+      };
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  String _formatDuration(int totalAttempts) {
+    // Estimate: average 30 seconds per question
+    final totalSeconds = totalAttempts * 30;
+    final hours = totalSeconds ~/ 3600;
+    final minutes = (totalSeconds % 3600) ~/ 60;
+
+    if (hours > 0) {
+      return '${hours}h ${minutes}m';
+    } else {
+      return '${minutes}m';
+    }
+  }
+
+  String _getOperationDisplayName(String operation) {
+    switch (operation) {
+      case 'addition':
+        return 'Addition (+)';
+      case 'subtraction':
+        return 'Subtraction (−)';
+      case 'multiplication':
+        return 'Multiplication (×)';
+      case 'division':
+        return 'Division (÷)';
+      default:
+        return operation;
+    }
+  }
+
+  // Simple achievement logic
+  bool _hasAchievement(String achievement) {
+    switch (achievement) {
+      case 'perfect_score':
+        // Check if user ever got 100% in a session (simplified)
+        return _overallAccuracy >= 90; // Approximate check
+      case 'speed_master':
+        // If user has answered many questions, assume they've been fast
+        return _totalAttempts >= 50;
+      case 'consistency':
+        // Check if user has practiced recently (simplified)
+        final todayAttempts = StatsService.getTodayAttempts();
+        final weekAttempts = StatsService.getWeekAttempts();
+        return weekAttempts.length >= 20; // Approximation
+      case 'math_wizard':
+        return _totalCorrect >= 500;
+      default:
+        return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,29 +134,42 @@ class Stats extends StatelessWidget {
             color: AppColors.textPrimary,
           ),
         ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(AppDimensions.spacingL),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Overall Stats Section
-                _buildOverallStatsSection(),
-                SizedBox(height: AppDimensions.spacingL),
-
-                // Performance by Operation Section
-                _buildOperationStatsSection(),
-                SizedBox(height: AppDimensions.spacingL),
-
-                // Achievement Section
-                _buildAchievementSection(),
-              ],
-            ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh_rounded),
+            onPressed: _loadStats,
+            tooltip: 'Refresh Stats',
           ),
-        ),
+        ],
       ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.all(AppDimensions.spacingL),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Overall Stats Section
+                      _buildOverallStatsSection(),
+                      SizedBox(height: AppDimensions.spacingL),
+
+                      // Performance by Operation Section
+                      _buildOperationStatsSection(),
+                      SizedBox(height: AppDimensions.spacingL),
+
+                      // Streak Section
+                      _buildStreakSection(),
+                      SizedBox(height: AppDimensions.spacingL),
+
+                      // Achievement Section
+                      _buildAchievementSection(),
+                    ],
+                  ),
+                ),
+              ),
+            ),
     );
   }
 
@@ -78,7 +202,7 @@ class Stats extends StatelessWidget {
               Expanded(
                 child: _buildStatCard(
                   title: 'Questions Answered',
-                  value: '247',
+                  value: _totalAttempts.toString(),
                   color: AppColors.primaryColor,
                 ),
               ),
@@ -86,7 +210,7 @@ class Stats extends StatelessWidget {
               Expanded(
                 child: _buildStatCard(
                   title: 'Overall Accuracy',
-                  value: '84%',
+                  value: '${_overallAccuracy.toStringAsFixed(0)}%',
                   color: AppColors.successColor,
                 ),
               ),
@@ -97,16 +221,64 @@ class Stats extends StatelessWidget {
             children: [
               Expanded(
                 child: _buildStatCard(
-                  title: 'Practice Sessions',
-                  value: '32',
+                  title: 'Correct Answers',
+                  value: _totalCorrect.toString(),
                   color: AppColors.secondaryColor,
                 ),
               ),
               SizedBox(width: AppDimensions.spacingM),
               Expanded(
                 child: _buildStatCard(
-                  title: 'Duration Practiced',
-                  value: '4h 23m',
+                  title: 'Time Practiced',
+                  value: _formatDuration(_totalAttempts),
+                  color: AppColors.warningColor,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStreakSection() {
+    return Container(
+      padding: EdgeInsets.all(AppDimensions.spacingL),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+        border: Border.all(
+          color: AppColors.borderColor,
+          width: 1,
+        ),
+        boxShadow: AppShadows.cardShadow,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Streaks',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: AppDimensions.spacingM),
+          Row(
+            children: [
+              Expanded(
+                child: _buildStatCard(
+                  title: 'Current Streak',
+                  value: _currentStreak.toString(),
+                  color: AppColors.primaryColor,
+                ),
+              ),
+              SizedBox(width: AppDimensions.spacingM),
+              Expanded(
+                child: _buildStatCard(
+                  title: 'Best Streak',
+                  value: _bestStreak.toString(),
                   color: AppColors.warningColor,
                 ),
               ),
@@ -118,6 +290,51 @@ class Stats extends StatelessWidget {
   }
 
   Widget _buildOperationStatsSection() {
+    // Check if there are any operations with attempts
+    bool hasData = _operationStats.values.any((stats) => stats['total'] > 0);
+
+    if (!hasData) {
+      return Container(
+        padding: EdgeInsets.all(AppDimensions.spacingL),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+          border: Border.all(
+            color: AppColors.borderColor,
+            width: 1,
+          ),
+          boxShadow: AppShadows.cardShadow,
+        ),
+        child: Column(
+          children: [
+            Icon(
+              Icons.analytics_outlined,
+              size: 48,
+              color: AppColors.textTertiary,
+            ),
+            SizedBox(height: AppDimensions.spacingM),
+            Text(
+              'No practice data yet',
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            Text(
+              'Start practicing to see your performance by operation',
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: AppColors.textTertiary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
     return Container(
       padding: EdgeInsets.all(AppDimensions.spacingL),
       decoration: BoxDecoration(
@@ -141,33 +358,22 @@ class Stats extends StatelessWidget {
             ),
           ),
           SizedBox(height: AppDimensions.spacingM),
-          _buildOperationStat(
-            operation: 'Addition (+)',
-            correct: 68,
-            incorrect: 12,
-            accuracy: 85,
-          ),
-          SizedBox(height: AppDimensions.spacingM),
-          _buildOperationStat(
-            operation: 'Subtraction (-)',
-            correct: 52,
-            incorrect: 18,
-            accuracy: 74,
-          ),
-          SizedBox(height: AppDimensions.spacingM),
-          _buildOperationStat(
-            operation: 'Multiplication (×)',
-            correct: 45,
-            incorrect: 8,
-            accuracy: 85,
-          ),
-          SizedBox(height: AppDimensions.spacingM),
-          _buildOperationStat(
-            operation: 'Division (÷)',
-            correct: 38,
-            incorrect: 14,
-            accuracy: 73,
-          ),
+          ..._operationStats.entries.map((entry) {
+            final operation = entry.key;
+            final stats = entry.value;
+
+            if (stats['total'] == 0) return const SizedBox.shrink();
+
+            return Padding(
+              padding: EdgeInsets.only(bottom: AppDimensions.spacingM),
+              child: _buildOperationStat(
+                operation: _getOperationDisplayName(operation),
+                correct: stats['correct'],
+                incorrect: stats['incorrect'],
+                accuracy: stats['accuracy'].round(),
+              ),
+            );
+          }).toList(),
         ],
       ),
     );
@@ -202,20 +408,20 @@ class Stats extends StatelessWidget {
               Expanded(
                 child: _buildAchievementBadge(
                   title: 'Perfect Score',
-                  subtitle: 'Got 100% in a session',
+                  subtitle: 'Get 90%+ accuracy',
                   icon: Icons.emoji_events_rounded,
                   color: AppColors.warningColor,
-                  earned: true,
+                  earned: _hasAchievement('perfect_score'),
                 ),
               ),
               SizedBox(width: AppDimensions.spacingM),
               Expanded(
                 child: _buildAchievementBadge(
                   title: 'Speed Master',
-                  subtitle: 'Answer 10 questions in 1 minute',
+                  subtitle: 'Answer 50+ questions',
                   icon: Icons.flash_on_rounded,
                   color: AppColors.secondaryColor,
-                  earned: true,
+                  earned: _hasAchievement('speed_master'),
                 ),
               ),
             ],
@@ -226,10 +432,10 @@ class Stats extends StatelessWidget {
               Expanded(
                 child: _buildAchievementBadge(
                   title: 'Consistency',
-                  subtitle: 'Practice 7 days in a row',
+                  subtitle: 'Practice regularly',
                   icon: Icons.calendar_today_rounded,
                   color: AppColors.successColor,
-                  earned: false,
+                  earned: _hasAchievement('consistency'),
                 ),
               ),
               SizedBox(width: AppDimensions.spacingM),
@@ -239,7 +445,7 @@ class Stats extends StatelessWidget {
                   subtitle: 'Answer 500 questions correctly',
                   icon: Icons.auto_awesome_rounded,
                   color: AppColors.primaryColor,
-                  earned: false,
+                  earned: _hasAchievement('math_wizard'),
                 ),
               ),
             ],
@@ -355,78 +561,6 @@ class Stats extends StatelessWidget {
                     ? AppColors.warningColor
                     : AppColors.errorColor,
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActivityItem({
-    required String title,
-    required String subtitle,
-    required String time,
-    required int accuracy,
-  }) {
-    return Row(
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: AppColors.primaryAccent,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Icon(
-            Icons.psychology_rounded,
-            size: 20,
-            color: AppColors.primaryColor,
-          ),
-        ),
-        SizedBox(width: AppDimensions.spacingM),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              Text(
-                subtitle,
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              '$accuracy%',
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: accuracy >= 80
-                    ? AppColors.successColor
-                    : AppColors.warningColor,
-              ),
-            ),
-            Text(
-              time,
-              style: GoogleFonts.poppins(
-                fontSize: 10,
-                fontWeight: FontWeight.w400,
-                color: AppColors.textTertiary,
-              ),
-            ),
-          ],
         ),
       ],
     );
