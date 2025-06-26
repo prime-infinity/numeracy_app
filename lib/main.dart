@@ -5,6 +5,8 @@ import 'package:numeracy_app/models/operation.dart';
 import 'package:numeracy_app/screens/home/home.dart';
 import 'package:numeracy_app/screens/questions/question.dart';
 import 'package:numeracy_app/screens/splash/splash_screen.dart';
+import 'package:numeracy_app/screens/stats/stats.dart';
+import 'package:numeracy_app/screens/layout/main_layout.dart';
 import 'package:numeracy_app/theme.dart';
 
 void main() {
@@ -27,38 +29,48 @@ class MyApp extends StatelessWidget {
         builder: (context, state) => const SplashScreen(),
       ),
 
-      // Home Route
-      GoRoute(
-        path: '/home',
-        builder: (context, state) => const Home(),
+      // Main Layout with Bottom Navigation
+      ShellRoute(
+        builder: (context, state, child) => MainLayout(child: child),
         routes: [
+          // Home Route
           GoRoute(
-            path: 'questions',
-            builder: (context, state) {
-              final range = state.uri.queryParameters['range'] ?? 'b';
-              final operationsParam = state.uri.queryParameters['operations'];
+            path: '/home',
+            builder: (context, state) => const Home(),
+          ),
 
-              List<Operation> operations;
-              if (operationsParam != null && operationsParam.isNotEmpty) {
-                // The operations are expected as a comma-separated list (e.g., "addition,subtraction")
-                operations = operationsParam
-                    .split(',')
-                    .map((op) => OperationExtension.fromString(op))
-                    .toList();
-              } else {
-                // If no operations are provided, use all available operations.
-                operations = Operation.values;
-              }
-
-              return Question(range: range, operations: operations);
-            },
+          // Stats Route
+          GoRoute(
+            path: '/stats',
+            builder: (context, state) => const Stats(),
           ),
         ],
       ),
 
-      // Direct Questions Route (for navigation from splash)
+      // Questions Route (outside of main layout)
       GoRoute(
         path: '/questions',
+        builder: (context, state) {
+          final range = state.uri.queryParameters['range'] ?? 'b';
+          final operationsParam = state.uri.queryParameters['operations'];
+
+          List<Operation> operations;
+          if (operationsParam != null && operationsParam.isNotEmpty) {
+            operations = operationsParam
+                .split(',')
+                .map((op) => OperationExtension.fromString(op))
+                .toList();
+          } else {
+            operations = Operation.values;
+          }
+
+          return Question(range: range, operations: operations);
+        },
+      ),
+
+      // Nested Questions Route from Home
+      GoRoute(
+        path: '/home/questions',
         builder: (context, state) {
           final range = state.uri.queryParameters['range'] ?? 'b';
           final operationsParam = state.uri.queryParameters['operations'];
