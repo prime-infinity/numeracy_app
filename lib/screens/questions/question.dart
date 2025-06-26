@@ -278,12 +278,6 @@ class _QuestionState extends ConsumerState<Question> {
                   // Progress indicators
                   Row(
                     children: [
-                      Icon(
-                        Icons.quiz_rounded,
-                        color: AppColors.primaryColor,
-                        size: 20,
-                      ),
-                      SizedBox(width: AppDimensions.spacingS),
                       Text(
                         '${_index + 1} of ${questions.length}',
                         style: GoogleFonts.poppins(
@@ -294,7 +288,7 @@ class _QuestionState extends ConsumerState<Question> {
                       ),
                       SizedBox(width: AppDimensions.spacingM),
                       ...List.generate(
-                        questions.length > 8 ? 8 : questions.length,
+                        questions.length,
                         (index) => Container(
                           margin:
                               EdgeInsets.only(right: AppDimensions.spacingXS),
@@ -306,14 +300,6 @@ class _QuestionState extends ConsumerState<Question> {
                           ),
                         ),
                       ),
-                      if (questions.length > 8)
-                        Text(
-                          '...',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
                     ],
                   ),
                   // Timer

@@ -59,9 +59,6 @@ class _HomeState extends ConsumerState<Home> {
                 // Custom Practice Section
                 _buildCustomPracticeSection(),
                 SizedBox(height: AppDimensions.spacingL),
-
-                // Stats Preview (Optional future enhancement)
-                _buildStatsPreview(),
               ],
             ),
           ),
@@ -321,87 +318,6 @@ class _HomeState extends ConsumerState<Home> {
       height: 2,
       color: isActive ? AppColors.secondaryColor : AppColors.borderColor,
       margin: EdgeInsets.symmetric(horizontal: AppDimensions.spacingXS),
-    );
-  }
-
-  Widget _buildStatsPreview() {
-    return Container(
-      padding: EdgeInsets.all(AppDimensions.spacingM),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppDimensions.containerRadius),
-        border: Border.all(
-          color: AppColors.borderColor,
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildStatItem(
-            icon: Icons.timer_rounded,
-            label: 'Average Time',
-            value: '2.3s',
-            color: AppColors.primaryColor,
-          ),
-          _buildStatDivider(),
-          _buildStatItem(
-            icon: Icons.check_circle_rounded,
-            label: 'Accuracy',
-            value: '94%',
-            color: AppColors.successColor,
-          ),
-          _buildStatDivider(),
-          _buildStatItem(
-            icon: Icons.trending_up_rounded,
-            label: 'Streak',
-            value: '7 days',
-            color: AppColors.warningColor,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatItem({
-    required IconData icon,
-    required String label,
-    required String value,
-    required Color color,
-  }) {
-    return Column(
-      children: [
-        Icon(
-          icon,
-          color: color,
-          size: 20,
-        ),
-        SizedBox(height: AppDimensions.spacingXS),
-        Text(
-          value,
-          style: GoogleFonts.poppins(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
-            color: AppColors.textSecondary,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatDivider() {
-    return Container(
-      width: 1,
-      height: 40,
-      color: AppColors.borderColor,
     );
   }
 }
