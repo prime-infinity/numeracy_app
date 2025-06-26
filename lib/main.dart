@@ -1,15 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:numeracy_app/models/operation.dart';
 import 'package:numeracy_app/screens/home/home.dart';
 import 'package:numeracy_app/screens/questions/question.dart';
 import 'package:numeracy_app/screens/splash/splash_screen.dart';
 import 'package:numeracy_app/screens/stats/stats.dart';
 import 'package:numeracy_app/screens/layout/main_layout.dart';
+import 'package:numeracy_app/services/stats_service.dart';
 import 'package:numeracy_app/theme.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Hive
+  final dir = await getApplicationDocumentsDirectory();
+  Hive.init(dir.path);
+
+  // Initialize the stats service
+  await StatsService.initialize();
+
   runApp(
     ProviderScope(
       child: MyApp(),

@@ -40,6 +40,9 @@ dependencies:
   go_router: ^14.6.2
   flutter_launcher_icons: ^0.14.3
   rename: ^3.0.2
+  hive: ^2.2.3
+  isar_flutter_libs: ^4.0.0-dev.13
+  path_provider: ^2.1.0
 
 dev_dependencies:
   flutter_test:
