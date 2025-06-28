@@ -378,7 +378,7 @@ class _StatsState extends State<Stats> {
                         if (index >= 0 && index < _accuracyData.length) {
                           final date = _accuracyData[index].date;
                           return SideTitleWidget(
-                            meta: meta,
+                            axisSide: meta.axisSide,
                             child: Text(
                               _selectedTimeRange.contains('Days')
                                   ? '${date.day}/${date.month}'
@@ -390,7 +390,10 @@ class _StatsState extends State<Stats> {
                             ),
                           );
                         }
-                        return const Text('');
+                        return const SideTitleWidget(
+                          axisSide: AxisSide.bottom,
+                          child: Text(''),
+                        );
                       },
                     ),
                   ),
