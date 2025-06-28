@@ -34,7 +34,20 @@ class StatsService {
     final attempts = <QuestionAttempt>[];
 
     for (int i = 0; i < _box.length; i++) {
-      final attemptMap = _box.getAt(i) as Map<String, dynamic>;
+      final dynamic attemptData = _box.getAt(i);
+
+      // Handle the type conversion safely
+      Map<String, dynamic> attemptMap;
+      if (attemptData is Map<String, dynamic>) {
+        attemptMap = attemptData;
+      } else if (attemptData is Map) {
+        // Convert Map<dynamic, dynamic> to Map<String, dynamic>
+        attemptMap = Map<String, dynamic>.from(attemptData);
+      } else {
+        // Skip invalid data
+        continue;
+      }
+
       attempts.add(QuestionAttempt.fromMap(attemptMap));
     }
 
@@ -82,6 +95,129 @@ class StatsService {
         DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
 
     return getAttemptsByDateRange(startOfWeekDay, now);
+  }
+
+  // NEW: Get accuracy data over time for graphing
+  static List<AccuracyDataPoint> getAccuracyOverTime({int? daysBack}) {
+    final attempts = getAllAttempts();
+    if (attempts.isEmpty) return [];
+
+    // Sort attempts by date
+    attempts.sort((a, b) => a.date.compareTo(b.date));
+
+    // Determine date range
+    final endDate = DateTime.now();
+    final startDate = daysBack != null
+        ? endDate.subtract(Duration(days: daysBack))
+        : attempts.first.date;
+
+    // Filter attempts within date range
+    final filteredAttempts = attempts
+        .where((attempt) =>
+            attempt.date.isAfter(startDate.subtract(const Duration(days: 1))) &&
+            attempt.date.isBefore(endDate.add(const Duration(days: 1))))
+        .toList();
+
+    // Group attempts by date and calculate daily accuracy
+    final Map<String, List<QuestionAttempt>> attemptsByDate = {};
+
+    for (final attempt in filteredAttempts) {
+      final dateKey =
+          '${attempt.date.year}-${attempt.date.month}-${attempt.date.day}';
+      attemptsByDate[dateKey] = attemptsByDate[dateKey] ?? [];
+      attemptsByDate[dateKey]!.add(attempt);
+    }
+
+    // Convert to accuracy data points
+    final List<AccuracyDataPoint> dataPoints = [];
+
+    for (final entry in attemptsByDate.entries) {
+      final dateKey = entry.key;
+      final dayAttempts = entry.value;
+
+      final correctCount = dayAttempts.where((a) => a.result == 1).length;
+      final accuracy = (correctCount / dayAttempts.length) * 100;
+
+      // Parse date from key
+      final dateParts = dateKey.split('-');
+      final date = DateTime(
+        int.parse(dateParts[0]),
+        int.parse(dateParts[1]),
+        int.parse(dateParts[2]),
+      );
+
+      dataPoints.add(AccuracyDataPoint(
+        date: date,
+        accuracy: accuracy,
+        totalQuestions: dayAttempts.length,
+        correctAnswers: correctCount,
+      ));
+    }
+
+    // Sort by date
+    dataPoints.sort((a, b) => a.date.compareTo(b.date));
+
+    return dataPoints;
+  }
+
+  // NEW: Get weekly accuracy averages
+  static List<AccuracyDataPoint> getWeeklyAccuracyAverages({int? weeksBack}) {
+    final attempts = getAllAttempts();
+    if (attempts.isEmpty) return [];
+
+    attempts.sort((a, b) => a.date.compareTo(b.date));
+
+    final endDate = DateTime.now();
+    final startDate = weeksBack != null
+        ? endDate.subtract(Duration(days: weeksBack * 7))
+        : attempts.first.date;
+
+    final filteredAttempts = attempts
+        .where((attempt) =>
+            attempt.date.isAfter(startDate.subtract(const Duration(days: 1))) &&
+            attempt.date.isBefore(endDate.add(const Duration(days: 1))))
+        .toList();
+
+    // Group by week
+    final Map<String, List<QuestionAttempt>> attemptsByWeek = {};
+
+    for (final attempt in filteredAttempts) {
+      // Get the start of the week (Monday)
+      final weekStart =
+          attempt.date.subtract(Duration(days: attempt.date.weekday - 1));
+      final weekKey = '${weekStart.year}-${weekStart.month}-${weekStart.day}';
+
+      attemptsByWeek[weekKey] = attemptsByWeek[weekKey] ?? [];
+      attemptsByWeek[weekKey]!.add(attempt);
+    }
+
+    final List<AccuracyDataPoint> dataPoints = [];
+
+    for (final entry in attemptsByWeek.entries) {
+      final weekKey = entry.key;
+      final weekAttempts = entry.value;
+
+      final correctCount = weekAttempts.where((a) => a.result == 1).length;
+      final accuracy = (correctCount / weekAttempts.length) * 100;
+
+      // Parse date from key
+      final dateParts = weekKey.split('-');
+      final weekStartDate = DateTime(
+        int.parse(dateParts[0]),
+        int.parse(dateParts[1]),
+        int.parse(dateParts[2]),
+      );
+
+      dataPoints.add(AccuracyDataPoint(
+        date: weekStartDate,
+        accuracy: accuracy,
+        totalQuestions: weekAttempts.length,
+        correctAnswers: correctCount,
+      ));
+    }
+
+    dataPoints.sort((a, b) => a.date.compareTo(b.date));
+    return dataPoints;
   }
 
   // Calculate accuracy for all attempts
@@ -175,5 +311,25 @@ class StatsService {
   // Export data as a list of maps (useful for debugging)
   static List<Map<String, dynamic>> exportData() {
     return getAllAttempts().map((attempt) => attempt.toMap()).toList();
+  }
+}
+
+// NEW: Data class for accuracy over time
+class AccuracyDataPoint {
+  final DateTime date;
+  final double accuracy;
+  final int totalQuestions;
+  final int correctAnswers;
+
+  AccuracyDataPoint({
+    required this.date,
+    required this.accuracy,
+    required this.totalQuestions,
+    required this.correctAnswers,
+  });
+
+  @override
+  String toString() {
+    return 'AccuracyDataPoint(date: $date, accuracy: ${accuracy.toStringAsFixed(1)}%, total: $totalQuestions, correct: $correctAnswers)';
   }
 }
