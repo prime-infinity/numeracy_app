@@ -39,38 +39,3 @@ class Question {
         .first;
   }
 }
-
-
-/*
-from typescript
-export interface Question{
-    id:string;
-    question:string;
-    difficulty: 1 | 2 | 3 | 4 | 5;
-    category: string;
-    subcategory: string;
-    options: {
-        id: string;
-        text: string;
-    }[];
-    correctAnswer: string;
-    tags: string[];
-    relatedQuestions: string[];
-    metadata:{
-        author: string;
-        usageStats: {
-            timesAnswered: number;
-            timesCorrect: number;
-            averageTimeToAnswer: number; // in seconds
-        };
-    }
-}*/
-
-// Check answer by option ID
-  /*bool isCorrectOption(String optionId) {
-    final option = _options.firstWhere(
-      (opt) => opt.containsKey(optionId),
-      orElse: () => {},
-    );
-    return option.isNotEmpty && option[optionId] == _result;
-  }*/
