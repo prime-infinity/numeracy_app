@@ -110,3 +110,19 @@ lib/
 4. Launch with `flutter run`
 
 The app initializes Hive storage on startup and is ready to generate questions immediately.
+
+## Media
+![Screenshot_20250630-122217](https://github.com/user-attachments/assets/490befa9-2952-4968-bf36-7f6aa9777e76)
+![Screenshot_20250630-122205](https://github.com/user-attachments/assets/22f109ca-7bea-4cad-a85b-b2c05f531f8c)
+![Screenshot_20250630-122203](https://github.com/user-attachments/assets/5a584e38-bf8c-40cf-a34f-2497b2352908)
+![Screenshot_20250630-122157](https://github.com/user-attachments/assets/5be9b63f-61d4-44c1-b12f-132b53f770c6)
+![Screenshot_20250630-122147](https://github.com/user-attachments/assets/d84e7b9d-d11f-4549-9de2-cd7229531234)
+![Screenshot_20250630-122140](https://github.com/user-attachments/assets/270183bf-b396-42dc-ae99-bd165c68f49b)
+![Screenshot_20250630-122115](https://github.com/user-attachments/assets/34e39e92-9a36-4cf6-91a5-2783c9200ca6)
+![Screenshot_20250630-122259](https://github.com/user-attachments/assets/53629c18-2cbf-45f2-91f3-c5cdee3c1b40)
+![Screenshot_20250630-122257](https://github.com/user-attachments/assets/969ca17a-430b-4b0f-a6d1-c8560a31dc28)
+![Screenshot_20250630-122253](https://github.com/user-attachments/assets/1b69096e-1928-4d7e-bc8a-de40b86ed743)
+![Screenshot_20250630-122249](https://github.com/user-attachments/assets/b3c46b32-6572-4c6d-9719-982144384c45)
+![Screenshot_20250630-122241](https://github.com/user-attachments/assets/668f435b-7df3-42f3-abfc-414d0b9c32d4)
+![Screenshot_20250630-122227](https://github.com/user-attachments/assets/530f5131-9895-4db8-8b4f-c6632a047813)
+

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'; // Add this import
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart'; // Add this import
 import 'package:path_provider/path_provider.dart';
 import 'package:numeracy_app/models/operation.dart';
 import 'package:numeracy_app/screens/home/home.dart';
@@ -15,9 +16,15 @@ import 'package:numeracy_app/theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Hive
-  final dir = await getApplicationDocumentsDirectory();
-  Hive.init(dir.path);
+  // Initialize Hive with platform-specific logic
+  if (kIsWeb) {
+    // For web, use Hive.initFlutter() which works with IndexedDB
+    await Hive.initFlutter();
+  } else {
+    // For mobile/desktop, use the traditional approach
+    final dir = await getApplicationDocumentsDirectory();
+    Hive.init(dir.path);
+  }
 
   // Initialize the stats service
   await StatsService.initialize();
