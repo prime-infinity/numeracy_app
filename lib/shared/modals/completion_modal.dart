@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:numeracy_app/shared/buttons/styled_button.dart';
 import 'package:numeracy_app/shared/texts/styled_text.dart';
 import 'package:numeracy_app/theme.dart';
@@ -72,7 +73,7 @@ class CompletionModal extends StatelessWidget {
                 SizedBox(height: AppDimensions.spacingXL),
 
                 // Action Buttons
-                _buildActionButtons(),
+                _buildActionButtons(isJourneyCompleted, context),
               ],
             ),
           ),
@@ -271,27 +272,33 @@ class CompletionModal extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(bool isJourneyCompleted, BuildContext context) {
     return Column(
       children: [
         // Primary Action - Try Again or Continue Journey
         StyledButton(
-          text: isJourneyMode ? 'Continue Journey' : 'Practice Again',
-          onPressed: onTryAgain,
+          text: isJourneyMode && isJourneyCompleted
+              ? 'Continue Journey'
+              : 'Practice Again',
+          onPressed: isJourneyMode && isJourneyCompleted
+              ? () => context.go('/journey')
+              : onTryAgain,
           width: double.infinity,
           icon: isJourneyMode
               ? Icons.arrow_forward_rounded
               : Icons.refresh_rounded,
         ),
-        SizedBox(height: AppDimensions.spacingM),
 
-        // Secondary Action - Review or End Session
-        StyledButton(
-          text: 'Review Answers',
-          onPressed: onClose,
-          width: double.infinity,
-          icon: Icons.remove_red_eye,
-        ),
+        // Secondary Action - Review or End Session (only show if NOT a completed journey)
+        if (!isJourneyCompleted) ...[
+          SizedBox(height: AppDimensions.spacingM),
+          StyledButton(
+            text: 'Review Answers',
+            onPressed: onClose,
+            width: double.infinity,
+            icon: Icons.remove_red_eye,
+          ),
+        ],
       ],
     );
   }
