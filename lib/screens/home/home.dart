@@ -56,9 +56,12 @@ class _HomeState extends ConsumerState<Home> {
                 _buildQuickPracticeCard(),
                 SizedBox(height: AppDimensions.spacingL),
 
+                // Journey Feature Card
+                _buildJourneyFeatureCard(),
+                SizedBox(height: AppDimensions.spacingL),
+
                 // Custom Practice Section
                 _buildCustomPracticeSection(),
-                SizedBox(height: AppDimensions.spacingL),
               ],
             ),
           ),
@@ -318,6 +321,86 @@ class _HomeState extends ConsumerState<Home> {
       height: 2,
       color: isActive ? AppColors.secondaryColor : AppColors.borderColor,
       margin: EdgeInsets.symmetric(horizontal: AppDimensions.spacingXS),
+    );
+  }
+
+  Widget _buildJourneyFeatureCard() {
+    return Container(
+      padding: EdgeInsets.all(AppDimensions.spacingL),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.secondaryColor,
+            AppColors.secondaryColor.withOpacity(0.8),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.secondaryColor.withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: GestureDetector(
+        onTap: () => context.go('/journey'),
+        child: Row(
+          children: [
+            // Icon Container
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(
+                Icons.route_rounded,
+                size: 32,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(width: AppDimensions.spacingM),
+
+            // Text Content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Math Journey',
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: AppDimensions.spacingXS),
+                  Text(
+                    'Follow a structured path through all math operations',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white.withOpacity(0.9),
+                      height: 1.3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Arrow Icon
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: Colors.white.withOpacity(0.8),
+              size: 20,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

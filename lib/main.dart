@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart'; // Add this import
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart'; // Add this import
+import 'package:numeracy_app/screens/journey/journey_screen.dart';
+import 'package:numeracy_app/services/journey_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:numeracy_app/models/operation.dart';
 import 'package:numeracy_app/screens/home/home.dart';
@@ -28,6 +30,7 @@ void main() async {
 
   // Initialize the stats service
   await StatsService.initialize();
+  await JourneyService.initialize();
 
   runApp(
     ProviderScope(
@@ -63,6 +66,12 @@ class MyApp extends StatelessWidget {
             path: '/stats',
             builder: (context, state) => const Stats(),
           ),
+
+          // Journey Route
+          GoRoute(
+            path: '/journey',
+            builder: (context, state) => const JourneyScreen(),
+          ),
         ],
       ),
 
@@ -72,6 +81,7 @@ class MyApp extends StatelessWidget {
         builder: (context, state) {
           final range = state.uri.queryParameters['range'] ?? 'b';
           final operationsParam = state.uri.queryParameters['operations'];
+          final isJourneyMode = state.uri.queryParameters['journey'] == 'true';
 
           List<Operation> operations;
           if (operationsParam != null && operationsParam.isNotEmpty) {
@@ -83,7 +93,11 @@ class MyApp extends StatelessWidget {
             operations = Operation.values;
           }
 
-          return Question(range: range, operations: operations);
+          return Question(
+            range: range,
+            operations: operations,
+            isJourneyMode: isJourneyMode,
+          );
         },
       ),
 

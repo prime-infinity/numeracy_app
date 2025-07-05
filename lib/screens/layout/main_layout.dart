@@ -11,6 +11,7 @@ class MainLayout extends StatelessWidget {
     final location = GoRouterState.of(context).uri.toString();
     if (location.startsWith('/home')) return 0;
     if (location.startsWith('/stats')) return 1;
+    if (location.startsWith('/journey')) return 2;
     return 0;
   }
 
@@ -21,6 +22,9 @@ class MainLayout extends StatelessWidget {
         break;
       case 1:
         context.go('/stats');
+        break;
+      case 2:
+        context.go('/journey');
         break;
     }
   }
@@ -54,6 +58,12 @@ class MainLayout extends StatelessWidget {
                   index: 0,
                   icon: Icons.home_filled,
                   isSelected: _getCurrentIndex(context) == 0,
+                ),
+                _buildNavItem(
+                  context,
+                  index: 2,
+                  icon: Icons.route_rounded,
+                  isSelected: _getCurrentIndex(context) == 2,
                 ),
                 _buildNavItem(
                   context,

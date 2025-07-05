@@ -11,13 +11,19 @@ import 'package:numeracy_app/screens/questions/question_card.dart';
 import 'package:numeracy_app/services/question_generator.dart';
 import 'package:numeracy_app/shared/modals/completion_modal.dart';
 import 'package:numeracy_app/theme.dart';
+import 'package:numeracy_app/services/journey_service.dart';
 
 class Question extends ConsumerStatefulWidget {
   final String range;
   final List<Operation> operations;
+  final bool isJourneyMode;
 
-  const Question(
-      {super.key, this.range = 'b', this.operations = Operation.values});
+  const Question({
+    super.key,
+    this.range = 'b',
+    this.operations = Operation.values,
+    this.isJourneyMode = false,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _QuestionState();
@@ -192,6 +198,11 @@ class _QuestionState extends ConsumerState<Question> {
     int correctAnswers =
         answeredQuestions.values.where((response) => response.isCorrect).length;
 
+    // Handle journey completion
+    if (widget.isJourneyMode) {
+      _handleJourneyCompletion();
+    }
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -199,6 +210,7 @@ class _QuestionState extends ConsumerState<Question> {
         return CompletionModal(
           correctAnswers: correctAnswers,
           totalQuestions: questions.length,
+          isJourneyMode: widget.isJourneyMode,
           onTryAgain: () {
             Navigator.of(context).pop();
             setState(() {
@@ -237,6 +249,26 @@ class _QuestionState extends ConsumerState<Question> {
           return 'division';
       }
     }).toList();
+  }
+
+  Future<void> _handleJourneyCompletion() async {
+    if (!widget.isJourneyMode) return;
+
+    final state = ref.watch(questionNotifierProvider);
+    final answeredQuestions =
+        state['answeredQuestions'] as Map<int, QuestionResponse>;
+    final questions = state['questions'];
+
+    final correctAnswers =
+        answeredQuestions.values.where((response) => response.isCorrect).length;
+    final accuracy = (correctAnswers / questions.length) * 100;
+
+    // If accuracy is 90% or higher, mark the journey step as completed
+    if (accuracy >= 90.0) {
+      // The journey service will automatically update progress when stats are recorded
+      await JourneyService
+          .getCurrentJourney(); // This will refresh the journey state
+    }
   }
 
   @override

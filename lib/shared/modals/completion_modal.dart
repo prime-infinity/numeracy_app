@@ -11,18 +11,21 @@ class CompletionModal extends StatelessWidget {
     required this.totalQuestions,
     required this.onTryAgain,
     required this.onClose,
+    this.isJourneyMode = false,
   });
 
   final int correctAnswers;
   final int totalQuestions;
   final VoidCallback onTryAgain;
   final VoidCallback onClose;
+  final bool isJourneyMode;
 
   @override
   Widget build(BuildContext context) {
     final double accuracy = (correctAnswers / totalQuestions) * 100;
     final bool isPerfectScore = correctAnswers == totalQuestions;
     final bool isGoodScore = accuracy >= 80;
+    final bool isJourneyCompleted = isJourneyMode && accuracy >= 90.0;
 
     return Material(
       type: MaterialType.transparency,
@@ -50,15 +53,22 @@ class CompletionModal extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Success Icon and Header
-                _buildHeader(isPerfectScore, isGoodScore),
+                _buildHeader(isPerfectScore, isGoodScore, isJourneyCompleted),
                 SizedBox(height: AppDimensions.spacingL),
 
                 // Score Display
                 _buildScoreSection(accuracy),
                 SizedBox(height: AppDimensions.spacingL),
 
+                // Journey Completion Badge (if applicable)
+                if (isJourneyCompleted) ...[
+                  _buildJourneyCompletionBadge(),
+                  SizedBox(height: AppDimensions.spacingL),
+                ],
+
                 // Performance Message
-                _buildPerformanceMessage(isPerfectScore, isGoodScore, accuracy),
+                _buildPerformanceMessage(
+                    isPerfectScore, isGoodScore, accuracy, isJourneyCompleted),
                 SizedBox(height: AppDimensions.spacingXL),
 
                 // Action Buttons
@@ -71,12 +81,17 @@ class CompletionModal extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(bool isPerfectScore, bool isGoodScore) {
+  Widget _buildHeader(
+      bool isPerfectScore, bool isGoodScore, bool isJourneyCompleted) {
     IconData iconData;
     Color iconColor;
     String title;
 
-    if (isPerfectScore) {
+    if (isJourneyCompleted) {
+      iconData = Icons.star_rounded;
+      iconColor = AppColors.warningColor;
+      title = 'Journey Step Completed!';
+    } else if (isPerfectScore) {
       iconData = Icons.emoji_events_rounded;
       iconColor = AppColors.warningColor;
       title = 'Perfect Score!';
@@ -168,22 +183,85 @@ class CompletionModal extends StatelessWidget {
     );
   }
 
-  Widget _buildPerformanceMessage(
-      bool isPerfectScore, bool isGoodScore, double accuracy) {
+  Widget _buildJourneyCompletionBadge() {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: AppDimensions.spacingL,
+        vertical: AppDimensions.spacingM,
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.warningColor.withOpacity(0.1),
+            AppColors.successColor.withOpacity(0.1),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(AppDimensions.containerRadius),
+        border: Border.all(
+          color: AppColors.warningColor.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.military_tech_rounded,
+            color: AppColors.warningColor,
+            size: 24,
+          ),
+          SizedBox(width: AppDimensions.spacingM),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Journey Progress',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.warningColor,
+                  ),
+                ),
+                Text(
+                  'You\'ve unlocked the next challenge!',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPerformanceMessage(bool isPerfectScore, bool isGoodScore,
+      double accuracy, bool isJourneyCompleted) {
     String message;
 
-    if (isPerfectScore) {
+    if (isJourneyCompleted) {
+      message =
+          'Congratulations! You\'ve completed this journey step with 90%+ accuracy. Ready for the next challenge?';
+    } else if (isPerfectScore) {
       message =
           'Outstanding! You got every question right. Your math skills are on fire! 🔥';
     } else if (isGoodScore) {
       message =
           'Excellent work! You\'re showing great improvement in your math skills.';
     } else if (accuracy >= 60) {
-      message =
-          'Good effort! With more practice, you\'ll master these concepts.';
+      message = isJourneyMode
+          ? 'Good effort! You need 90% accuracy to complete this journey step. Keep practicing!'
+          : 'Good effort! With more practice, you\'ll master these concepts.';
     } else {
-      message =
-          'Don\'t give up! Every practice session makes you stronger. Keep going!';
+      message = isJourneyMode
+          ? 'Don\'t give up! Practice more to reach 90% accuracy and complete this journey step.'
+          : 'Don\'t give up! Every practice session makes you stronger. Keep going!';
     }
 
     return StyledMediumText(
@@ -196,16 +274,18 @@ class CompletionModal extends StatelessWidget {
   Widget _buildActionButtons() {
     return Column(
       children: [
-        // Primary Action - Try Again
+        // Primary Action - Try Again or Continue Journey
         StyledButton(
-          text: 'Practice Again',
+          text: isJourneyMode ? 'Continue Journey' : 'Practice Again',
           onPressed: onTryAgain,
           width: double.infinity,
-          icon: Icons.refresh_rounded,
+          icon: isJourneyMode
+              ? Icons.arrow_forward_rounded
+              : Icons.refresh_rounded,
         ),
         SizedBox(height: AppDimensions.spacingM),
 
-        // Secondary Action - End Session
+        // Secondary Action - Review or End Session
         StyledButton(
           text: 'Review Answers',
           onPressed: onClose,
