@@ -7,7 +7,7 @@ import 'package:numeracy_app/models/journey.dart';
 import 'package:numeracy_app/services/journey_service.dart';
 import 'package:numeracy_app/theme.dart';
 
-final journeyProvider = FutureProvider<Journey>((ref) async {
+final journeyProvider = FutureProvider.autoDispose<Journey>((ref) async {
   return await JourneyService.getCurrentJourney();
 });
 
@@ -33,18 +33,9 @@ class JourneyScreen extends ConsumerWidget {
             color: AppColors.textPrimary,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded),
-            onPressed: () {
-              ref.invalidate(journeyProvider);
-            },
-            tooltip: 'Refresh Progress',
-          ),
-        ],
       ),
       body: journeyAsync.when(
-        data: (journey) => _buildJourneyContent(context, journey),
+        data: (journey) => _buildJourneyContent(context, ref, journey),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
           child: Column(
@@ -72,6 +63,13 @@ class JourneyScreen extends ConsumerWidget {
                   color: AppColors.textSecondary,
                 ),
               ),
+              SizedBox(height: AppDimensions.spacingM),
+              ElevatedButton(
+                onPressed: () {
+                  ref.invalidate(journeyProvider);
+                },
+                child: Text('Retry'),
+              ),
             ],
           ),
         ),
@@ -79,7 +77,8 @@ class JourneyScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildJourneyContent(BuildContext context, Journey journey) {
+  Widget _buildJourneyContent(
+      BuildContext context, WidgetRef ref, Journey journey) {
     return SingleChildScrollView(
       child: Padding(
         padding: EdgeInsets.all(AppDimensions.spacingM),
@@ -92,6 +91,11 @@ class JourneyScreen extends ConsumerWidget {
 
             // Journey Steps
             _buildJourneySteps(context, journey),
+
+            SizedBox(height: AppDimensions.spacingL),
+
+            // Restart Journey Button
+            _buildRestartButton(context, ref),
           ],
         ),
       ),
@@ -287,7 +291,8 @@ class JourneyScreen extends ConsumerWidget {
                       ),
                     ),
                     if (step.accuracy != null &&
-                        step.totalAttempts != null) ...[
+                        step.totalAttempts != null &&
+                        step.totalAttempts! > 0) ...[
                       SizedBox(height: AppDimensions.spacingXS),
                       Text(
                         'Accuracy: ${step.accuracy!.toStringAsFixed(1)}% (${step.totalAttempts} attempts)',
@@ -338,6 +343,111 @@ class JourneyScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildRestartButton(BuildContext context, WidgetRef ref) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () => _showRestartConfirmation(context, ref),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.errorColor,
+          foregroundColor: Colors.white,
+          padding: EdgeInsets.symmetric(vertical: AppDimensions.spacingM),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
+          ),
+        ),
+        child: Text(
+          'Restart Journey',
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showRestartConfirmation(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Restart Journey?',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          content: Text(
+            'Are you sure you want to restart your journey? This will reset all progress and cannot be undone.',
+            style: GoogleFonts.poppins(fontSize: 14),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'Cancel',
+                style: GoogleFonts.poppins(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await _restartJourney(context, ref);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.errorColor,
+                foregroundColor: Colors.white,
+              ),
+              child: Text(
+                'Restart',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _restartJourney(BuildContext context, WidgetRef ref) async {
+    try {
+      await JourneyService.resetJourney();
+      ref.invalidate(journeyProvider);
+
+      // Show success message
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Journey restarted successfully!',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: AppColors.successColor,
+          ),
+        );
+      }
+    } catch (e) {
+      // Show error message
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Failed to restart journey. Please try again.',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: AppColors.errorColor,
+          ),
+        );
+      }
+    }
   }
 
   void _navigateToStep(BuildContext context, JourneyStep step) {
