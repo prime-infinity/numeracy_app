@@ -183,7 +183,7 @@ class _QuestionState extends ConsumerState<Question> {
     });
   }
 
-  void _showCompletionDialog() {
+  void _showCompletionDialog() async {
     if (_modalVisible) return;
 
     setState(() {
@@ -198,9 +198,10 @@ class _QuestionState extends ConsumerState<Question> {
     int correctAnswers =
         answeredQuestions.values.where((response) => response.isCorrect).length;
 
-    // Handle journey completion
+    // Handle journey completion and get actual completion status
+    bool isStepActuallyCompleted = false;
     if (widget.isJourneyMode) {
-      _handleJourneyCompletion();
+      isStepActuallyCompleted = await _handleJourneyCompletion();
     }
 
     showDialog(
@@ -211,6 +212,8 @@ class _QuestionState extends ConsumerState<Question> {
           correctAnswers: correctAnswers,
           totalQuestions: questions.length,
           isJourneyMode: widget.isJourneyMode,
+          isJourneyStepCompleted:
+              isStepActuallyCompleted, // Add this new parameter
           onTryAgain: () {
             Navigator.of(context).pop();
             setState(() {
@@ -251,8 +254,8 @@ class _QuestionState extends ConsumerState<Question> {
     }).toList();
   }
 
-  Future<void> _handleJourneyCompletion() async {
-    if (!widget.isJourneyMode) return;
+  Future<bool> _handleJourneyCompletion() async {
+    if (!widget.isJourneyMode) return false;
 
     final state = ref.watch(questionNotifierProvider);
     final answeredQuestions =
@@ -274,11 +277,18 @@ class _QuestionState extends ConsumerState<Question> {
         if (currentStep.difficulty.code == widget.range &&
             currentStep.operation.name == widget.operations.first.name) {
           await JourneyService.completeStep(currentStep);
+
+          // Check if the step is actually completed by getting updated journey
+          final updatedJourney = await JourneyService.getCurrentJourney();
+          final updatedStep =
+              updatedJourney.steps[updatedJourney.currentStepIndex];
+          return updatedStep.isCompleted;
         }
       } catch (e) {
         print('Error completing journey step: $e');
       }
     }
+    return false;
   }
 
   @override
@@ -295,7 +305,8 @@ class _QuestionState extends ConsumerState<Question> {
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_rounded),
-          onPressed: () => context.go('/home'),
+          onPressed: () =>
+              context.go(widget.isJourneyMode ? '/journey' : '/home'),
         ),
         title: Text(
           widget.isJourneyMode ? 'Math Journey' : 'Practice Session',

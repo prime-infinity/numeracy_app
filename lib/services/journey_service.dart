@@ -125,10 +125,49 @@ class JourneyService {
     }
   }
 
+  static Future<void> _clearJourneyStats() async {
+    try {
+      // Get the stats box directly
+      final statsBox = Hive.box('question_attempts');
+
+      // Remove all journey-related attempts
+      final keysToRemove = <int>[];
+
+      for (int i = 0; i < statsBox.length; i++) {
+        final attemptData = statsBox.getAt(i);
+        Map<String, dynamic> attemptMap;
+
+        if (attemptData is Map<String, dynamic>) {
+          attemptMap = attemptData;
+        } else if (attemptData is Map) {
+          attemptMap = Map<String, dynamic>.from(attemptData);
+        } else {
+          continue;
+        }
+
+        // Check if this is a journey mode attempt
+        if (attemptMap['isJourneyMode'] == true) {
+          keysToRemove.add(i);
+        }
+      }
+
+      // Remove in reverse order to maintain indices
+      for (int i = keysToRemove.length - 1; i >= 0; i--) {
+        await statsBox.deleteAt(keysToRemove[i]);
+      }
+    } catch (e) {
+      print('Error clearing journey stats: $e');
+      throw e;
+    }
+  }
+
   static Future<void> resetJourney() async {
     try {
       // Clear all journey data
       await _box.delete(_journeyKey);
+
+      // Clear all journey-related stats as well
+      await _clearJourneyStats();
 
       // Create and save a fresh default journey
       final defaultJourney = Journey.createDefault();

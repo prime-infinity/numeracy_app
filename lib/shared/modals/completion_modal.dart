@@ -13,6 +13,7 @@ class CompletionModal extends StatelessWidget {
     required this.onTryAgain,
     required this.onClose,
     this.isJourneyMode = false,
+    this.isJourneyStepCompleted = false,
   });
 
   final int correctAnswers;
@@ -20,13 +21,16 @@ class CompletionModal extends StatelessWidget {
   final VoidCallback onTryAgain;
   final VoidCallback onClose;
   final bool isJourneyMode;
+  final bool isJourneyStepCompleted;
 
   @override
   Widget build(BuildContext context) {
     final double accuracy = (correctAnswers / totalQuestions) * 100;
     final bool isPerfectScore = correctAnswers == totalQuestions;
     final bool isGoodScore = accuracy >= 80;
-    final bool isJourneyCompleted = isJourneyMode && accuracy >= 90.0;
+    final bool isJourneyCompleted = isJourneyMode && isJourneyStepCompleted;
+    //final bool isGoodJourneyProgress =
+    //    isJourneyMode && accuracy >= 90.0 && !isJourneyStepCompleted;
 
     return Material(
       type: MaterialType.transparency,
@@ -248,7 +252,10 @@ class CompletionModal extends StatelessWidget {
 
     if (isJourneyCompleted) {
       message =
-          'Congratulations! You\'ve completed this journey step with 90%+ accuracy. Ready for the next challenge?';
+          'Congratulations! You\'ve completed this journey step with 90%+ accuracy and enough practice attempts. Ready for the next challenge?';
+    } else if (isJourneyMode && accuracy >= 90.0) {
+      message =
+          'Great job! You scored 90%+ accuracy. Keep practicing to build consistency and complete this journey step!';
     } else if (isPerfectScore) {
       message =
           'Outstanding! You got every question right. Your math skills are on fire! 🔥';
@@ -257,7 +264,7 @@ class CompletionModal extends StatelessWidget {
           'Excellent work! You\'re showing great improvement in your math skills.';
     } else if (accuracy >= 60) {
       message = isJourneyMode
-          ? 'Good effort! You need 90% accuracy to complete this journey step. Keep practicing!'
+          ? 'Good effort! You need 90% accuracy with consistent practice to complete this journey step. Keep going!'
           : 'Good effort! With more practice, you\'ll master these concepts.';
     } else {
       message = isJourneyMode
