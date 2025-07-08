@@ -14,6 +14,7 @@ class QuestionCard extends ConsumerStatefulWidget {
     required this.isQuizEnded,
     required this.range, // Add range parameter
     required this.operations, // Add operations parameter
+    required this.isJourneyMode,
     super.key,
   });
 
@@ -23,6 +24,7 @@ class QuestionCard extends ConsumerStatefulWidget {
   final bool isQuizEnded;
   final String range; // Range parameter for difficulty tracking
   final List<String> operations; // Operations for determining current operation
+  final bool isJourneyMode;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _QuestionCardState();
@@ -56,6 +58,7 @@ class _QuestionCardState extends ConsumerState<QuestionCard>
       operation: operation,
       difficulty: widget.range,
       isCorrect: isCorrect,
+      isJourneyMode: widget.isJourneyMode,
     );
 
     // Delay to show the selection feedback

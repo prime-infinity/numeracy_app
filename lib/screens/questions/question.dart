@@ -263,11 +263,21 @@ class _QuestionState extends ConsumerState<Question> {
         answeredQuestions.values.where((response) => response.isCorrect).length;
     final accuracy = (correctAnswers / questions.length) * 100;
 
-    // If accuracy is 90% or higher, mark the journey step as completed
+    // If accuracy is 90% or higher, record the journey step completion
     if (accuracy >= 90.0) {
-      // The journey service will automatically update progress when stats are recorded
-      await JourneyService
-          .getCurrentJourney(); // This will refresh the journey state
+      try {
+        // Get the current journey to find the active step
+        final journey = await JourneyService.getCurrentJourney();
+        final currentStep = journey.steps[journey.currentStepIndex];
+
+        // Only complete the step if it matches current difficulty and operation
+        if (currentStep.difficulty.code == widget.range &&
+            currentStep.operation.name == widget.operations.first.name) {
+          await JourneyService.completeStep(currentStep);
+        }
+      } catch (e) {
+        print('Error completing journey step: $e');
+      }
     }
   }
 
@@ -288,7 +298,7 @@ class _QuestionState extends ConsumerState<Question> {
           onPressed: () => context.go('/home'),
         ),
         title: Text(
-          'Practice Session',
+          widget.isJourneyMode ? 'Math Journey' : 'Practice Session',
           style: GoogleFonts.poppins(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -426,6 +436,7 @@ class _QuestionState extends ConsumerState<Question> {
                       range: widget.range, // Pass the range parameter
                       operations:
                           _getOperationStrings(), // Pass operations as strings
+                      isJourneyMode: widget.isJourneyMode,
                     ),
                   );
                 },

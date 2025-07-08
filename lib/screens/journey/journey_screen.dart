@@ -203,7 +203,9 @@ class JourneyScreen extends ConsumerWidget {
     return Container(
       margin: EdgeInsets.only(bottom: AppDimensions.spacingM),
       child: GestureDetector(
-        onTap: step.isUnlocked ? () => _navigateToStep(context, step) : null,
+        onTap: step.isUnlocked && !step.isCompleted
+            ? () => _navigateToStep(context, step)
+            : null,
         child: Container(
           padding: EdgeInsets.all(AppDimensions.spacingM),
           decoration: BoxDecoration(
@@ -452,6 +454,6 @@ class JourneyScreen extends ConsumerWidget {
 
   void _navigateToStep(BuildContext context, JourneyStep step) {
     context.go(
-        '/questions?range=${step.difficulty.code}&operations=${step.operation.name}&journey=true');
+        '/questions?range=${step.difficulty.code}&operations=${step.operation.name}&journey=true&stepNumber=${step.stepNumber}');
   }
 }

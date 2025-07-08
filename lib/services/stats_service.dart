@@ -18,12 +18,14 @@ class StatsService {
     required String operation,
     required String difficulty,
     required bool isCorrect,
+    required bool isJourneyMode,
   }) async {
     final attempt = QuestionAttempt(
       date: DateTime.now(),
       operation: operation,
       difficulty: difficulty,
       result: isCorrect ? 1 : 0,
+      isJourneyMode: isJourneyMode,
     );
 
     await _box.add(attempt.toMap());

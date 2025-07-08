@@ -5,12 +5,14 @@ class QuestionAttempt {
       operation; // 'addition', 'subtraction', 'multiplication', 'division'
   final String difficulty; // 'a', 'b', 'c' (easy, medium, hard)
   final int result; // 0 for incorrect, 1 for correct
+  final bool isJourneyMode;
 
   QuestionAttempt({
     required this.date,
     required this.operation,
     required this.difficulty,
     required this.result,
+    required this.isJourneyMode,
   });
 
   // Convert to Map for Hive storage
@@ -20,6 +22,7 @@ class QuestionAttempt {
       'operation': operation,
       'difficulty': difficulty,
       'result': result,
+      'isJourneyMode': isJourneyMode,
     };
   }
 
@@ -30,11 +33,12 @@ class QuestionAttempt {
       operation: map['operation'],
       difficulty: map['difficulty'],
       result: map['result'],
+      isJourneyMode: map['isJourneyMode'] ?? false,
     );
   }
 
   @override
   String toString() {
-    return 'QuestionAttempt(date: $date, operation: $operation, difficulty: $difficulty, result: $result)';
+    return 'QuestionAttempt(date: $date, operation: $operation, difficulty: $difficulty, result: $result, isJourneyMode: $isJourneyMode)';
   }
 }

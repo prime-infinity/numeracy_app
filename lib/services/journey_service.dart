@@ -97,7 +97,8 @@ class JourneyService {
       final attempts = StatsService.getAllAttempts()
           .where((attempt) =>
               attempt.operation == step.operation.name &&
-              attempt.difficulty == step.difficulty.code)
+              attempt.difficulty == step.difficulty.code &&
+              attempt.isJourneyMode == true)
           .toList();
 
       if (attempts.isEmpty) {
@@ -127,7 +128,7 @@ class JourneyService {
   static Future<void> resetJourney() async {
     try {
       // Clear all journey data
-      await _box.clear();
+      await _box.delete(_journeyKey);
 
       // Create and save a fresh default journey
       final defaultJourney = Journey.createDefault();
